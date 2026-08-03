@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="KatameApi.Tests/KatameApi.Tests.csproj" />
+  <Project Path="KatameApi/KatameApi.csproj" />
+</Solution>
