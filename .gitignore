@@ -1,0 +1,29 @@
+# Env / secrets
+.env
+
+# Node / frontend
+node_modules/
+dist/
+dist-ssr/
+dev-dist/
+*.local
+.vite/
+coverage/
+
+# .NET / backend
+bin/
+obj/
+*.user
+appsettings.Development.json
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vs/
+.idea/
