@@ -97,6 +97,59 @@ export const es = {
       completed: '¡Tarea completada!',
     },
   },
+
+  training: {
+    title: 'Entrenamiento',
+    subtitle: 'Organiza tu rutina semanal',
+    newDay: 'Nuevo día',
+    editDay: 'Editar día',
+    emptyState: 'No tienes días de entrenamiento todavía. Crea el primero.',
+    confirmDeleteDayDescription:
+      'Se eliminará el día y todos sus ejercicios. Esta acción no se puede deshacer.',
+    fields: {
+      dayTitle: 'Título',
+      dayTitlePlaceholder: 'Ej. Empuje',
+      dayOfWeek: 'Día de la semana',
+    },
+    days: {
+      Monday: 'Lunes',
+      Tuesday: 'Martes',
+      Wednesday: 'Miércoles',
+      Thursday: 'Jueves',
+      Friday: 'Viernes',
+      Saturday: 'Sábado',
+      Sunday: 'Domingo',
+    },
+    validation: {
+      dayTitleRequired: 'El título es obligatorio.',
+      dayTitleMaxLength: 'El título no puede superar los 100 caracteres.',
+    },
+    toasts: {
+      dayCreated: 'Día de entrenamiento creado.',
+      dayUpdated: 'Día actualizado.',
+      dayDeleted: 'Día eliminado.',
+    },
+    exercises: {
+      emptyState: 'Todavía no agregaste ejercicios a este día.',
+      newExercise: 'Agregar ejercicio',
+      editExercise: 'Editar ejercicio',
+      name: 'Ejercicio',
+      namePlaceholder: 'Ej. Press banca',
+      setsReps: 'Series x repeticiones',
+      setsRepsPlaceholder: 'Ej. 4x8',
+      validation: {
+        nameRequired: 'El nombre del ejercicio es obligatorio.',
+        nameMaxLength: 'El nombre no puede superar los 100 caracteres.',
+        setsRepsRequired: 'Las series y repeticiones son obligatorias.',
+        setsRepsMaxLength: 'Las series y repeticiones no pueden superar los 50 caracteres.',
+      },
+      toasts: {
+        created: 'Ejercicio agregado.',
+        updated: 'Ejercicio actualizado.',
+        deleted: 'Ejercicio eliminado.',
+      },
+    },
+  },
 } as const
 
 export type Es = typeof es
