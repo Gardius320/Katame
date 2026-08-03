@@ -9,13 +9,7 @@ import { useSessionStore } from '@/shared/store/session-store'
 import { login } from './api'
 import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/shared/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card'
 import {
   Form,
   FormControl,
@@ -53,11 +47,22 @@ export function LoginPage() {
   const onSubmit = form.handleSubmit((values) => mutation.mutate(values))
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-background p-4">
+      <div className="text-center">
+        <h1
+          className="font-heading font-bold text-primary uppercase leading-none"
+          style={{ fontSize: 'clamp(3rem, 15vw, 6.5rem)' }}
+        >
+          {es.app.name}
+        </h1>
+        <p className="mt-3 font-mono text-sm tracking-wide text-muted-foreground">
+          {es.auth.tagline}
+        </p>
+      </div>
+
       <Card className="w-full max-w-sm border-border bg-card">
         <CardHeader>
-          <CardTitle className="font-heading text-2xl">{es.auth.loginTitle}</CardTitle>
-          <CardDescription>{es.auth.loginSubtitle}</CardDescription>
+          <CardTitle className="font-heading text-lg">{es.auth.loginTitle}</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>

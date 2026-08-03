@@ -52,8 +52,8 @@ export const es = {
   },
 
   auth: {
+    tagline: 'Panel personal',
     loginTitle: 'Iniciar sesión',
-    loginSubtitle: 'Ingresa tus credenciales para continuar',
     usernameLabel: 'Usuario',
     usernamePlaceholder: 'tu_usuario',
     passwordLabel: 'Contraseña',
