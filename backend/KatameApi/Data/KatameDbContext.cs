@@ -11,6 +11,8 @@ public class KatameDbContext : DbContext
 
     public DbSet<User> Users => Set<User>();
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
+    public DbSet<TrainingDay> TrainingDays => Set<TrainingDay>();
+    public DbSet<Exercise> Exercises => Set<Exercise>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,5 +46,24 @@ public class KatameDbContext : DbContext
             PasswordHash = "$2a$11$ARlh7cu2CbBsZfvRSZl08.g.mUZm3QvsQGvlZzIHkpJeIgv6ozn5m",
             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         });
+
+        modelBuilder.Entity<TrainingDay>()
+            .HasMany(d => d.Exercises)
+            .WithOne()
+            .HasForeignKey(e => e.TrainingDayId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TrainingDay>().HasData(
+            new TrainingDay { Id = 1, DayOfWeek = DayOfWeek.Monday, Title = "Empuje" },
+            new TrainingDay { Id = 2, DayOfWeek = DayOfWeek.Wednesday, Title = "Tirón" },
+            new TrainingDay { Id = 3, DayOfWeek = DayOfWeek.Friday, Title = "Pierna" });
+
+        modelBuilder.Entity<Exercise>().HasData(
+            new Exercise { Id = 1, TrainingDayId = 1, Name = "Press banca", SetsReps = "4x8" },
+            new Exercise { Id = 2, TrainingDayId = 1, Name = "Press militar", SetsReps = "3x10" },
+            new Exercise { Id = 3, TrainingDayId = 2, Name = "Dominadas", SetsReps = "4x8" },
+            new Exercise { Id = 4, TrainingDayId = 2, Name = "Remo con barra", SetsReps = "3x10" },
+            new Exercise { Id = 5, TrainingDayId = 3, Name = "Sentadilla", SetsReps = "4x8" },
+            new Exercise { Id = 6, TrainingDayId = 3, Name = "Peso muerto rumano", SetsReps = "3x10" });
     }
 }

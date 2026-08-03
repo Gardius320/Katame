@@ -92,7 +92,9 @@ builder.Services.AddRateLimiter(options =>
 });
 
 // Controllers + FluentValidation
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 
 // AutoMapper (perfiles se agregan a medida que se suman módulos)
@@ -104,6 +106,8 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<ITrainingDayRepository, TrainingDayRepository>();
+builder.Services.AddScoped<ITrainingService, TrainingService>();
 
 // Health checks
 builder.Services.AddHealthChecks()
