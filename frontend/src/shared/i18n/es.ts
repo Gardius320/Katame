@@ -382,6 +382,31 @@ export const es = {
       deleted: 'Proyecto eliminado.',
     },
   },
+
+  today: {
+    title: 'Hoy',
+    subtitle: 'Tu resumen del día',
+    balance: {
+      title: 'Saldo',
+    },
+    upcoming: {
+      title: 'Próximos vencimientos',
+      emptyState: 'No tienes vencimientos próximos.',
+      type: {
+        obligation: 'Obligación',
+        credit_card: 'Tarjeta',
+        subscription: 'Suscripción',
+      },
+    },
+    training: {
+      title: 'Entrenamiento de hoy',
+      emptyState: 'No tienes entrenamiento programado para hoy.',
+    },
+    tasks: {
+      title: 'Tareas urgentes',
+      emptyState: 'No tienes tareas urgentes.',
+    },
+  },
 } as const
 
 export type Es = typeof es
