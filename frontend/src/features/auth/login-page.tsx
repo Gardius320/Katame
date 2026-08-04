@@ -50,7 +50,7 @@ export function LoginPage() {
     <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-background p-4">
       <div className="text-center">
         <h1
-          className="font-heading font-bold text-primary uppercase leading-none"
+          className="font-brush text-primary uppercase leading-none"
           style={{ fontSize: 'clamp(3rem, 15vw, 6.5rem)' }}
         >
           {es.app.name}
