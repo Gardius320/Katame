@@ -293,6 +293,34 @@ export const es = {
       },
     },
   },
+
+  subscriptions: {
+    title: 'Suscripciones',
+    subtitle: 'Controla tus servicios recurrentes y sus renovaciones',
+    newSubscription: 'Nueva suscripción',
+    editSubscription: 'Editar suscripción',
+    emptyState: 'No tienes suscripciones registradas. Crea la primera.',
+    renewsSoon: 'Renueva pronto',
+    reminderOn: 'Recordatorio activado',
+    reminderOff: 'Sin recordatorio',
+    fields: {
+      name: 'Nombre',
+      namePlaceholder: 'Ej. Netflix',
+      amount: 'Monto',
+      renewalDate: 'Fecha de renovación',
+      reminderEnabled: 'Recordarme antes de renovar',
+    },
+    validation: {
+      nameRequired: 'El nombre es obligatorio.',
+      nameMaxLength: 'El nombre no puede superar los 100 caracteres.',
+      amountRequired: 'El monto debe ser mayor a cero.',
+    },
+    toasts: {
+      created: 'Suscripción creada.',
+      updated: 'Suscripción actualizada.',
+      deleted: 'Suscripción eliminada.',
+    },
+  },
 } as const
 
 export type Es = typeof es
