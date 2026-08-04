@@ -18,6 +18,8 @@ public class KatameDbContext : DbContext
     public DbSet<Obligation> Obligations => Set<Obligation>();
     public DbSet<CreditCard> CreditCards => Set<CreditCard>();
     public DbSet<Subscription> Subscriptions => Set<Subscription>();
+    public DbSet<Goal> Goals => Set<Goal>();
+    public DbSet<Project> Projects => Set<Project>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
