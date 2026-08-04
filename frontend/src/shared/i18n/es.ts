@@ -321,6 +321,67 @@ export const es = {
       deleted: 'Suscripción eliminada.',
     },
   },
+
+  goals: {
+    title: 'Metas',
+    subtitle: 'Sigue el progreso de tus objetivos personales',
+    newGoal: 'Nueva meta',
+    editGoal: 'Editar meta',
+    emptyState: 'No tienes metas todavía. Crea la primera.',
+    progressLabel: '{percent}% completado',
+    fields: {
+      title: 'Título',
+      titlePlaceholder: 'Ej. Correr 10K',
+      category: 'Categoría',
+      categoryPlaceholder: 'Ej. Salud',
+      progressPercentage: 'Progreso (%)',
+      dueDate: 'Fecha límite',
+    },
+    validation: {
+      titleRequired: 'El título es obligatorio.',
+      titleMaxLength: 'El título no puede superar los 150 caracteres.',
+      categoryRequired: 'La categoría es obligatoria.',
+      categoryMaxLength: 'La categoría no puede superar los 50 caracteres.',
+      progressRange: 'El progreso debe estar entre 0 y 100.',
+    },
+    toasts: {
+      created: 'Meta creada.',
+      updated: 'Meta actualizada.',
+      deleted: 'Meta eliminada.',
+      completed: '¡Meta completada!',
+    },
+  },
+
+  projects: {
+    title: 'Proyectos',
+    subtitle: 'Organiza tus proyectos personales de principio a fin',
+    newProject: 'Nuevo proyecto',
+    editProject: 'Editar proyecto',
+    emptyState: 'No tienes proyectos todavía. Crea el primero.',
+    fields: {
+      name: 'Nombre',
+      namePlaceholder: 'Ej. Rediseño de la casa',
+      description: 'Descripción',
+      descriptionPlaceholder: 'Ej. Renovar la cocina y el patio',
+      status: 'Estado',
+    },
+    status: {
+      active: 'Activo',
+      on_hold: 'En pausa',
+      completed: 'Completado',
+    },
+    validation: {
+      nameRequired: 'El nombre es obligatorio.',
+      nameMaxLength: 'El nombre no puede superar los 100 caracteres.',
+      descriptionMaxLength: 'La descripción no puede superar los 500 caracteres.',
+      statusInvalid: 'Selecciona un estado válido.',
+    },
+    toasts: {
+      created: 'Proyecto creado.',
+      updated: 'Proyecto actualizado.',
+      deleted: 'Proyecto eliminado.',
+    },
+  },
 } as const
 
 export type Es = typeof es
