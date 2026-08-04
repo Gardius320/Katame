@@ -17,6 +17,7 @@ public class KatameDbContext : DbContext
     public DbSet<SavingsGoal> SavingsGoals => Set<SavingsGoal>();
     public DbSet<Obligation> Obligations => Set<Obligation>();
     public DbSet<CreditCard> CreditCards => Set<CreditCard>();
+    public DbSet<Subscription> Subscriptions => Set<Subscription>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

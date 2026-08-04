@@ -62,12 +62,13 @@ builder.Services.AddAuthorization(options =>
         .Build();
 });
 
-// CORS: el frontend corre en un puerto distinto al backend
-var allowedOrigin = builder.Configuration["Cors:AllowedOrigin"] ?? "http://localhost:5173";
+// CORS: el frontend corre en un puerto distinto al backend (o en otro host de la LAN al probar desde el celular)
+var allowedOrigins = (builder.Configuration["Cors:AllowedOrigin"] ?? "http://localhost:5173")
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
-        policy.WithOrigins(allowedOrigin)
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
@@ -116,6 +117,8 @@ builder.Services.AddScoped<IObligationRepository, ObligationRepository>();
 builder.Services.AddScoped<IObligationService, ObligationService>();
 builder.Services.AddScoped<ICreditCardRepository, CreditCardRepository>();
 builder.Services.AddScoped<ICreditCardService, CreditCardService>();
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 
 // Health checks
 builder.Services.AddHealthChecks()
