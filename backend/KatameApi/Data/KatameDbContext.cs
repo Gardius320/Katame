@@ -13,6 +13,16 @@ public class KatameDbContext : DbContext
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
     public DbSet<TrainingDay> TrainingDays => Set<TrainingDay>();
     public DbSet<Exercise> Exercises => Set<Exercise>();
+    public DbSet<Transaction> Transactions => Set<Transaction>();
+    public DbSet<SavingsGoal> SavingsGoals => Set<SavingsGoal>();
+    public DbSet<Obligation> Obligations => Set<Obligation>();
+    public DbSet<CreditCard> CreditCards => Set<CreditCard>();
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        // decimal(18,2) por defecto para todo monto de dinero, en vez del decimal(65,30) de MySQL.
+        configurationBuilder.Properties<decimal>().HavePrecision(18, 2);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

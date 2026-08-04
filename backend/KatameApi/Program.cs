@@ -108,6 +108,14 @@ builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITrainingDayRepository, TrainingDayRepository>();
 builder.Services.AddScoped<ITrainingService, TrainingService>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ISavingsGoalRepository, SavingsGoalRepository>();
+builder.Services.AddScoped<ISavingsGoalService, SavingsGoalService>();
+builder.Services.AddScoped<IObligationRepository, ObligationRepository>();
+builder.Services.AddScoped<IObligationService, ObligationService>();
+builder.Services.AddScoped<ICreditCardRepository, CreditCardRepository>();
+builder.Services.AddScoped<ICreditCardService, CreditCardService>();
 
 // Health checks
 builder.Services.AddHealthChecks()
