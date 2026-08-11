@@ -181,6 +181,14 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+// Aplica migraciones pendientes al arrancar. No hay un pipeline de deploy separado
+// que corra `dotnet ef database update` contra la base de producción (Railway), así
+// que este es el único punto donde el esquema se mantiene al día.
+using (var scope = app.Services.CreateScope())
+{
+    scope.ServiceProvider.GetRequiredService<KatameDbContext>().Database.Migrate();
+}
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
