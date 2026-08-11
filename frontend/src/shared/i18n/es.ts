@@ -16,6 +16,7 @@ export const es = {
     projects: 'Proyectos',
     subscriptions: 'Suscripciones',
     users: 'Usuarios',
+    more: 'Más',
   },
 
   common: {
