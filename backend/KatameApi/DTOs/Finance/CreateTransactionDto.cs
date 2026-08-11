@@ -6,4 +6,5 @@ public class CreateTransactionDto
     public string Type { get; set; } = string.Empty;
     public string Category { get; set; } = string.Empty;
     public DateTime Date { get; set; }
+    public int? CreditCardId { get; set; }
 }

@@ -49,14 +49,22 @@ public class KatameDbContext : DbContext
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasIndex(u => u.Username).IsUnique();
+            entity.HasIndex(u => u.Email).IsUnique();
+            entity.HasIndex(u => u.DocumentId).IsUnique();
         });
 
         modelBuilder.Entity<User>().HasData(new User
         {
             Id = 1,
             Username = "admin",
+            FirstName = "Admin",
+            LastName = "Katame",
+            DocumentId = "ADMIN-0001",
+            PhoneNumber = "0000000000",
+            Email = "admin@katame.local",
             // Password semilla: "Admin123!" (hash BCrypt precalculado, cambiar tras el primer login)
             PasswordHash = "$2a$11$ARlh7cu2CbBsZfvRSZl08.g.mUZm3QvsQGvlZzIHkpJeIgv6ozn5m",
+            IsAdmin = true,
             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         });
 
@@ -65,6 +73,14 @@ public class KatameDbContext : DbContext
             .WithOne()
             .HasForeignKey(e => e.TrainingDayId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Vínculo opcional: no toda transacción es un gasto de tarjeta. Si se borra la
+        // tarjeta, la transacción queda sin vínculo en vez de perderse (soft-delete aparte).
+        modelBuilder.Entity<CreditCard>()
+            .HasMany<Transaction>()
+            .WithOne()
+            .HasForeignKey(t => t.CreditCardId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder.Entity<TrainingDay>().HasData(
             new TrainingDay { Id = 1, DayOfWeek = DayOfWeek.Monday, Title = "Empuje" },

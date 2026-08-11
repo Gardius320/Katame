@@ -9,6 +9,7 @@ import { Button } from '@/shared/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card'
 import { Badge } from '@/shared/components/ui/badge'
 import { Skeleton } from '@/shared/components/ui/skeleton'
+import { CircularGauge } from '@/shared/components/ui/circular-gauge'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +25,9 @@ interface ExerciseTarget {
   dayId: number
   exercise: Exercise
 }
+
+// TODO: hardcodeado por ahora — eventualmente debería vincularse al módulo de Metas.
+const WEEKLY_TRAINING_GOAL = 4
 
 export default function TrainingPage() {
   const { data: days, isLoading } = useTrainingDays()
@@ -86,6 +90,18 @@ export default function TrainingPage() {
           {es.training.newDay}
         </Button>
       </div>
+
+      {!isLoading && days && (
+        <Card className="flex w-fit flex-col items-center gap-2 p-4">
+          <CircularGauge
+            value={days.length}
+            max={WEEKLY_TRAINING_GOAL}
+            label={es.training.weeklyGoal.label}
+            size="lg"
+            variant={days.length >= WEEKLY_TRAINING_GOAL ? 'success' : 'default'}
+          />
+        </Card>
+      )}
 
       {isLoading ? (
         <div className="grid gap-4 sm:grid-cols-2">

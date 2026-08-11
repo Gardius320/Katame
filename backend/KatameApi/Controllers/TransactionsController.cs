@@ -32,9 +32,10 @@ public class TransactionsController : ControllerBase
         [FromQuery] int pageSize = 20,
         [FromQuery] DateTime? startDate = null,
         [FromQuery] DateTime? endDate = null,
-        [FromQuery] string? category = null)
+        [FromQuery] string? category = null,
+        [FromQuery] int? creditCardId = null)
     {
-        var filter = BuildFilter(startDate, endDate, category);
+        var filter = BuildFilter(startDate, endDate, category, creditCardId);
         var result = await _transactionService.GetPagedAsync(filter, NormalizePage(page), NormalizePageSize(pageSize));
         return Ok(result);
     }
@@ -43,9 +44,10 @@ public class TransactionsController : ControllerBase
     public async Task<IActionResult> Export(
         [FromQuery] DateTime? startDate = null,
         [FromQuery] DateTime? endDate = null,
-        [FromQuery] string? category = null)
+        [FromQuery] string? category = null,
+        [FromQuery] int? creditCardId = null)
     {
-        var filter = BuildFilter(startDate, endDate, category);
+        var filter = BuildFilter(startDate, endDate, category, creditCardId);
         var csv = await _transactionService.ExportToCsvAsync(filter);
         var bytes = Encoding.UTF8.GetBytes(csv);
         return File(bytes, "text/csv", "transactions.csv");
@@ -74,11 +76,13 @@ public class TransactionsController : ControllerBase
         return NoContent();
     }
 
-    private static TransactionFilter BuildFilter(DateTime? startDate, DateTime? endDate, string? category) => new()
+    private static TransactionFilter BuildFilter(
+        DateTime? startDate, DateTime? endDate, string? category, int? creditCardId) => new()
     {
         StartDate = startDate,
         EndDate = endDate,
         Category = category,
+        CreditCardId = creditCardId,
     };
 
     private static int NormalizePage(int page) => page < 1 ? 1 : page;

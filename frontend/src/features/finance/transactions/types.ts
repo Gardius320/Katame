@@ -6,12 +6,14 @@ export interface Transaction {
   type: TransactionType
   category: string
   date: string
+  creditCardId: number | null
 }
 
 export interface TransactionFilter {
   startDate?: string
   endDate?: string
   category?: string
+  creditCardId?: number
 }
 
 export interface PagedResult<T> {
@@ -26,4 +28,5 @@ export interface TransactionFormValues {
   type: TransactionType
   category: string
   date: string
+  creditCardId: number | null
 }

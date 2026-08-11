@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { es } from '@/shared/i18n/es'
 import { useCreateTransaction, useUpdateTransaction } from './hooks'
+import { useCreditCards } from '../credit-cards/hooks'
 import type { Transaction, TransactionType } from './types'
 import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
@@ -32,6 +33,8 @@ import {
 
 const typeOptions: TransactionType[] = ['income', 'expense']
 
+const NO_CARD_VALUE = 'none'
+
 const transactionFormSchema = z.object({
   amount: z.number().positive(es.finance.transactions.validation.amountRequired),
   type: z.enum(['income', 'expense']),
@@ -40,6 +43,7 @@ const transactionFormSchema = z.object({
     .min(1, es.finance.transactions.validation.categoryRequired)
     .max(50, es.finance.transactions.validation.categoryMaxLength),
   date: z.string().min(1),
+  creditCardId: z.string(),
 })
 
 type TransactionFormSchema = z.infer<typeof transactionFormSchema>
@@ -63,10 +67,11 @@ export function TransactionFormDialog({
   const createTransaction = useCreateTransaction()
   const updateTransaction = useUpdateTransaction()
   const mutation = isEditing ? updateTransaction : createTransaction
+  const { data: creditCards } = useCreditCards()
 
   const form = useForm<TransactionFormSchema>({
     resolver: zodResolver(transactionFormSchema),
-    defaultValues: { amount: 0, type: 'expense', category: '', date: '' },
+    defaultValues: { amount: 0, type: 'expense', category: '', date: '', creditCardId: NO_CARD_VALUE },
   })
 
   useEffect(() => {
@@ -78,6 +83,7 @@ export function TransactionFormDialog({
         date: transaction
           ? toDateInputValue(transaction.date)
           : toDateInputValue(new Date().toISOString()),
+        creditCardId: transaction?.creditCardId ? String(transaction.creditCardId) : NO_CARD_VALUE,
       })
     }
   }, [open, transaction, form])
@@ -88,6 +94,7 @@ export function TransactionFormDialog({
       type: values.type,
       category: values.category,
       date: new Date(values.date).toISOString(),
+      creditCardId: values.creditCardId === NO_CARD_VALUE ? null : Number(values.creditCardId),
     }
 
     const onSuccess = () => onOpenChange(false)
@@ -187,6 +194,34 @@ export function TransactionFormDialog({
                   <FormControl>
                     <Input type="date" className="font-numeric" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="creditCardId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{es.finance.transactions.fields.creditCard}</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value={NO_CARD_VALUE}>
+                        {es.finance.transactions.fields.creditCardNone}
+                      </SelectItem>
+                      {(creditCards ?? []).map((card) => (
+                        <SelectItem key={card.id} value={String(card.id)}>
+                          {card.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

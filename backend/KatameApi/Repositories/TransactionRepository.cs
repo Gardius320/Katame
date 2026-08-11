@@ -32,6 +32,11 @@ public class TransactionRepository : ITransactionRepository
             query = query.Where(t => t.Category == filter.Category);
         }
 
+        if (filter.CreditCardId is not null)
+        {
+            query = query.Where(t => t.CreditCardId == filter.CreditCardId.Value);
+        }
+
         return query.OrderByDescending(t => t.Date).ThenByDescending(t => t.Id);
     }
 

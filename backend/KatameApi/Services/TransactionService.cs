@@ -13,11 +13,16 @@ namespace KatameApi.Services;
 public class TransactionService : ITransactionService
 {
     private readonly ITransactionRepository _transactionRepository;
+    private readonly ICreditCardRepository _creditCardRepository;
     private readonly IMapper _mapper;
 
-    public TransactionService(ITransactionRepository transactionRepository, IMapper mapper)
+    public TransactionService(
+        ITransactionRepository transactionRepository,
+        ICreditCardRepository creditCardRepository,
+        IMapper mapper)
     {
         _transactionRepository = transactionRepository;
+        _creditCardRepository = creditCardRepository;
         _mapper = mapper;
     }
 
@@ -36,12 +41,15 @@ public class TransactionService : ITransactionService
 
     public async Task<TransactionDto> CreateAsync(CreateTransactionDto request)
     {
+        await EnsureCreditCardExistsAsync(request.CreditCardId);
+
         var transaction = new Transaction
         {
             Amount = request.Amount,
             Type = request.Type,
             Category = request.Category,
             Date = request.Date.ToUniversalTime(),
+            CreditCardId = request.CreditCardId,
         };
 
         await _transactionRepository.AddAsync(transaction);
@@ -53,15 +61,31 @@ public class TransactionService : ITransactionService
     public async Task<TransactionDto> UpdateAsync(int id, UpdateTransactionDto request)
     {
         var transaction = await GetTransactionOrThrowAsync(id);
+        await EnsureCreditCardExistsAsync(request.CreditCardId);
 
         transaction.Amount = request.Amount;
         transaction.Type = request.Type;
         transaction.Category = request.Category;
         transaction.Date = request.Date.ToUniversalTime();
+        transaction.CreditCardId = request.CreditCardId;
 
         await _transactionRepository.SaveChangesAsync();
 
         return _mapper.Map<TransactionDto>(transaction);
+    }
+
+    private async Task EnsureCreditCardExistsAsync(int? creditCardId)
+    {
+        if (creditCardId is null)
+        {
+            return;
+        }
+
+        var card = await _creditCardRepository.GetByIdAsync(creditCardId.Value);
+        if (card is null)
+        {
+            throw new ApiException("La tarjeta no existe.", HttpStatusCode.NotFound);
+        }
     }
 
     public async Task DeleteAsync(int id)

@@ -351,6 +351,9 @@ namespace KatameApi.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int?>("CreditCardId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime(6)");
 
@@ -362,6 +365,8 @@ namespace KatameApi.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreditCardId");
 
                     b.ToTable("Transactions");
                 });
@@ -377,7 +382,36 @@ namespace KatameApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("DocumentId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpiry")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -393,6 +427,12 @@ namespace KatameApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DocumentId")
+                        .IsUnique();
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.HasIndex("Username")
                         .IsUnique();
 
@@ -403,7 +443,13 @@ namespace KatameApi.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DocumentId = "ADMIN-0001",
+                            Email = "admin@katame.local",
+                            FirstName = "Admin",
+                            IsAdmin = true,
+                            LastName = "Katame",
                             PasswordHash = "$2a$11$ARlh7cu2CbBsZfvRSZl08.g.mUZm3QvsQGvlZzIHkpJeIgv6ozn5m",
+                            PhoneNumber = "0000000000",
                             Username = "admin"
                         });
                 });
@@ -415,6 +461,14 @@ namespace KatameApi.Migrations
                         .HasForeignKey("TrainingDayId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("KatameApi.Models.Transaction", b =>
+                {
+                    b.HasOne("KatameApi.Models.CreditCard", null)
+                        .WithMany()
+                        .HasForeignKey("CreditCardId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("KatameApi.Models.TrainingDay", b =>

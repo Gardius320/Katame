@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
 import { es as dateFnsEs } from 'date-fns/locale'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, YAxis } from 'recharts'
+import { CalendarClock, Dumbbell, ListTodo, Wallet } from 'lucide-react'
 import { es } from '@/shared/i18n/es'
 import { formatCurrency } from '@/shared/lib/format'
 import { TaskStatusBadge } from '@/features/tasks/task-status-badge'
@@ -8,9 +9,18 @@ import { useToday } from './hooks'
 import { Card } from '@/shared/components/ui/card'
 import { Badge } from '@/shared/components/ui/badge'
 import { Skeleton } from '@/shared/components/ui/skeleton'
+import { StatCard } from '@/shared/components/ui/stat-card'
 
 function formatDate(date: string): string {
   return format(new Date(date), "d 'de' MMMM", { locale: dateFnsEs })
+}
+
+function computeBalanceTrendPercent(trend: { amount: number }[]): number | undefined {
+  if (trend.length < 2) return undefined
+  const first = trend[0].amount
+  const last = trend[trend.length - 1].amount
+  if (first === 0) return undefined
+  return Math.round(((last - first) / Math.abs(first)) * 100)
 }
 
 export default function TodayPage() {
@@ -23,6 +33,11 @@ export default function TodayPage() {
           <h1 className="font-heading text-2xl font-semibold">{es.today.title}</h1>
           <p className="text-muted-foreground">{es.today.subtitle}</p>
         </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <Skeleton key={index} className="h-28 w-full rounded-2xl" />
+          ))}
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           {Array.from({ length: 4 }).map((_, index) => (
             <Skeleton key={index} className="h-48 w-full rounded-xl" />
@@ -32,11 +47,40 @@ export default function TodayPage() {
     )
   }
 
+  const balanceTrendPercent = computeBalanceTrendPercent(data.balanceTrend)
+
   return (
     <div className="grid gap-6">
       <div>
         <h1 className="font-heading text-2xl font-semibold">{es.today.title}</h1>
         <p className="text-muted-foreground">{es.today.subtitle}</p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          label={es.today.balance.title}
+          value={formatCurrency(data.balance)}
+          icon={Wallet}
+          variant="hero"
+          trend={balanceTrendPercent !== undefined ? { value: balanceTrendPercent } : undefined}
+        />
+        <StatCard
+          label={es.today.upcoming.title}
+          value={data.upcomingDueDates.length}
+          icon={CalendarClock}
+          variant={data.upcomingDueDates.length > 0 ? 'warning' : 'default'}
+        />
+        <StatCard
+          label={es.today.training.title}
+          value={data.todayTraining?.exercises.length ?? 0}
+          icon={Dumbbell}
+        />
+        <StatCard
+          label={es.today.tasks.title}
+          value={data.urgentTasks.length}
+          icon={ListTodo}
+          variant={data.urgentTasks.length > 0 ? 'warning' : 'default'}
+        />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

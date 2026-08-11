@@ -24,11 +24,17 @@ builder.Host.UseSerilog((context, services, configuration) =>
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Falta la cadena de conexión 'DefaultConnection'. Configúrala con User Secrets.");
 
+// Versión fija en vez de ServerVersion.AutoDetect: docker-compose.yml usa mysql:8, y
+// AutoDetect exige una conexión viva incluso para operaciones de diseño (dotnet ef migrations).
 builder.Services.AddDbContext<KatameDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 0))));
 
 // JWT
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+
+// Email (recuperación de contraseña) y URL base del frontend para armar el enlace del correo
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
+builder.Services.Configure<FrontendSettings>(builder.Configuration.GetSection("Frontend"));
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()
     ?? throw new InvalidOperationException("Falta la sección 'Jwt' en la configuración.");
 var jwtKey = builder.Configuration["Jwt:Key"]
@@ -60,6 +66,8 @@ builder.Services.AddAuthorization(options =>
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .Build();
+
+    options.AddPolicy("AdminOnly", policy => policy.RequireClaim("isAdmin", "true"));
 });
 
 // CORS: el frontend corre en un puerto distinto al backend (o en otro host de la LAN al probar desde el celular)
@@ -73,10 +81,22 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
-// Rate limiting sobre login para mitigar fuerza bruta
+// Rate limiting sobre login y registro para mitigar fuerza bruta / creación masiva de cuentas
 builder.Services.AddRateLimiter(options =>
 {
     options.AddFixedWindowLimiter("login", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = 5;
+        limiterOptions.Window = TimeSpan.FromMinutes(1);
+        limiterOptions.QueueLimit = 0;
+    });
+    options.AddFixedWindowLimiter("register", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = 3;
+        limiterOptions.Window = TimeSpan.FromMinutes(1);
+        limiterOptions.QueueLimit = 0;
+    });
+    options.AddFixedWindowLimiter("password-reset", limiterOptions =>
     {
         limiterOptions.PermitLimit = 5;
         limiterOptions.Window = TimeSpan.FromMinutes(1);
@@ -105,6 +125,8 @@ builder.Services.AddAutoMapper(cfg => { }, typeof(Program).Assembly);
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITrainingDayRepository, TrainingDayRepository>();

@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { es } from '@/shared/i18n/es'
 import { useSessionStore } from '@/shared/store/session-store'
@@ -39,7 +39,7 @@ export function LoginPage() {
     mutationFn: login,
     onSuccess: (data) => {
       setSession(data)
-      toast.success(es.auth.loginSuccess)
+      toast.success(es.auth.loginSuccess(data.firstName || data.username))
       navigate('/today', { replace: true })
     },
   })
@@ -105,11 +105,25 @@ export function LoginPage() {
                 )}
               />
 
+              <Link
+                to="/forgot-password"
+                className="-mt-2 text-right text-sm font-medium text-primary hover:underline"
+              >
+                {es.auth.forgotPasswordLink}
+              </Link>
+
               <Button type="submit" className="mt-2" disabled={mutation.isPending}>
                 {mutation.isPending ? es.auth.loggingIn : es.auth.loginButton}
               </Button>
             </form>
           </Form>
+
+          <p className="mt-4 text-center text-sm text-muted-foreground">
+            {es.auth.noAccount}{' '}
+            <Link to="/register" className="font-medium text-primary hover:underline">
+              {es.auth.registerLink}
+            </Link>
+          </p>
         </CardContent>
       </Card>
     </div>
