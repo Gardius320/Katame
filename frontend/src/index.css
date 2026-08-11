@@ -127,6 +127,18 @@
     @apply font-mono tabular-nums;
   }
 
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .h-safe-top {
+    height: env(safe-area-inset-top);
+  }
+
   /* Sello de finalización: gesto compartido en todos los módulos al completar algo */
   .katame-seal {
     animation: katame-seal-pop 180ms ease-out;
