@@ -13,8 +13,8 @@ public class UpdateUserValidatorTests
         Username = "ana",
         FirstName = "Ana",
         LastName = "Pérez",
-        DocumentId = "1701234567",
-        PhoneNumber = "0999999999",
+        DocumentId = "1020304050",
+        PhoneNumber = "3001234567",
         Email = "ana@katame.local",
     };
 
@@ -46,10 +46,10 @@ public class UpdateUserValidatorTests
     }
 
     [Fact]
-    public void Falla_cuando_la_cedula_no_tiene_un_digito_verificador_valido()
+    public void Falla_cuando_la_cedula_no_tiene_un_formato_valido()
     {
         var dto = Valid();
-        dto.DocumentId = "1234567890";
+        dto.DocumentId = "0123456789"; // no puede empezar en 0
         var result = _validator.TestValidate(dto);
         result.ShouldHaveValidationErrorFor(x => x.DocumentId);
     }

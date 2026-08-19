@@ -13,8 +13,8 @@ public class CreateUserValidatorTests
         Username = "ana",
         FirstName = "Ana",
         LastName = "Pérez",
-        DocumentId = "1701234567",
-        PhoneNumber = "0999999999",
+        DocumentId = "1020304050",
+        PhoneNumber = "3001234567",
         Email = "ana@katame.local",
         Password = "Password123!",
     };
@@ -56,11 +56,10 @@ public class CreateUserValidatorTests
     }
 
     [Theory]
-    [InlineData("1234567890")] // dígito verificador incorrecto
-    [InlineData("9901234567")] // código de provincia inválido (99)
-    [InlineData("1791234567")] // tercer dígito de persona natural inválido (9)
-    [InlineData("12345")] // longitud incorrecta
-    [InlineData("17ABCDEFGH")] // no numérica
+    [InlineData("12345")] // longitud incorrecta (menos de 6 dígitos)
+    [InlineData("12345678901")] // longitud incorrecta (más de 10 dígitos)
+    [InlineData("0123456789")] // no puede empezar en 0
+    [InlineData("10ABCDEFGH")] // no numérica
     public void Falla_cuando_la_cedula_no_es_valida(string documentId)
     {
         var dto = Valid();
@@ -71,9 +70,9 @@ public class CreateUserValidatorTests
 
     [Theory]
     [InlineData("")]
-    [InlineData("123456789")] // muy corto
-    [InlineData("0512345678")] // prefijo de celular inválido
-    [InlineData("08123456789")] // prefijo de fijo inválido
+    [InlineData("123456789")] // muy corto (9 dígitos)
+    [InlineData("30012345678")] // muy largo (11 dígitos)
+    [InlineData("2001234567")] // no empieza en 3
     public void Falla_cuando_el_telefono_no_es_valido(string phoneNumber)
     {
         var dto = Valid();
@@ -83,8 +82,8 @@ public class CreateUserValidatorTests
     }
 
     [Theory]
-    [InlineData("0991234567")] // celular
-    [InlineData("022345678")] // fijo
+    [InlineData("3001234567")]
+    [InlineData("3159876543")]
     public void Pasa_con_telefonos_validos(string phoneNumber)
     {
         var dto = Valid();

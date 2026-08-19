@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { es } from '@/shared/i18n/es'
-import { ecuadorianPhoneRegex, isValidEcuadorianCedula } from '@/shared/lib/ecuadorian-document-id'
+import { colombianPhoneRegex, isValidColombianCedula } from '@/shared/lib/colombian-document-id'
 import { useCreateUser, useUpdateUser } from './hooks'
 import type { User } from './types'
 import { Button } from '@/shared/components/ui/button'
@@ -36,11 +36,11 @@ function buildUserFormSchema(isEditing: boolean) {
     documentId: z
       .string()
       .min(1, es.users.validation.documentIdRequired)
-      .refine(isValidEcuadorianCedula, es.users.validation.documentIdInvalid),
+      .refine(isValidColombianCedula, es.users.validation.documentIdInvalid),
     phoneNumber: z
       .string()
       .min(1, es.users.validation.phoneNumberRequired)
-      .regex(ecuadorianPhoneRegex, es.users.validation.phoneNumberInvalid),
+      .regex(colombianPhoneRegex, es.users.validation.phoneNumberInvalid),
     email: z
       .string()
       .min(1, es.users.validation.emailRequired)

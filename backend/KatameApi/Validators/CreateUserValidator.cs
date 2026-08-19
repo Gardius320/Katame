@@ -23,12 +23,12 @@ public class CreateUserValidator : AbstractValidator<CreateUserDto>
         RuleFor(x => x.DocumentId)
             .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("La cédula es obligatoria.")
-            .Must(EcuadorianDocumentId.IsValidCedula).WithMessage("Ingresa una cédula ecuatoriana válida.");
+            .Must(ColombianDocumentId.IsValidCedula).WithMessage("Ingresa una cédula colombiana válida.");
 
         RuleFor(x => x.PhoneNumber)
             .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("El teléfono es obligatorio.")
-            .Matches(@"^(09\d{8}|0[2-7]\d{7})$").WithMessage("Ingresa un teléfono ecuatoriano válido (celular: 09XXXXXXXX, fijo: 0X XXXXXXX).");
+            .Matches(@"^3\d{9}$").WithMessage("Ingresa un celular colombiano válido (10 dígitos, empieza en 3).");
 
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("El email es obligatorio.")

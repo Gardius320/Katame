@@ -4,6 +4,7 @@ import { es } from '@/shared/i18n/es'
 import { formatCurrency } from '@/shared/lib/format'
 import { useCreditCards, useDeleteCreditCard } from './hooks'
 import { CreditCardFormDialog } from './credit-card-form-dialog'
+import { findBankPreset, getBankInitials } from './bank-presets'
 import type { CreditCard } from './types'
 import { Button } from '@/shared/components/ui/button'
 import { Card } from '@/shared/components/ui/card'
@@ -18,6 +19,31 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/shared/components/ui/alert-dialog'
+
+// Insignia del banco: prioriza el logo real subido por el usuario, luego la
+// insignia de color con iniciales (si el banco coincide con la lista de
+// bancos conocidos) y por último un ícono genérico.
+function CardBankBadge({ card }: { card: CreditCard }) {
+  if (card.logoDataUrl) {
+    return (
+      <img src={card.logoDataUrl} alt="" className="size-5 shrink-0 rounded object-contain" />
+    )
+  }
+
+  const preset = findBankPreset(card.bank)
+  if (preset) {
+    return (
+      <span
+        className="flex size-5 shrink-0 items-center justify-center rounded-full text-[9px] font-semibold text-white"
+        style={{ backgroundColor: preset.color }}
+      >
+        {getBankInitials(preset.name)}
+      </span>
+    )
+  }
+
+  return <CreditCardIcon className="size-5 shrink-0 text-primary" />
+}
 
 export default function CreditCardsPage() {
   const { data: cards, isLoading } = useCreditCards()
@@ -67,8 +93,13 @@ export default function CreditCardsPage() {
             <Card key={card.id} className="gap-3 p-4">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <CreditCardIcon className="size-5 text-primary" />
-                  <p className="font-heading font-semibold">{card.name}</p>
+                  <CardBankBadge card={card} />
+                  <div>
+                    <p className="font-heading font-semibold">{card.name}</p>
+                    {card.bank && (
+                      <p className="text-xs text-muted-foreground">{card.bank}</p>
+                    )}
+                  </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
                   <Button
@@ -104,9 +135,26 @@ export default function CreditCardsPage() {
                 </p>
               </div>
 
-              <p className="font-numeric text-sm">
-                {es.finance.creditCards.limitLabel}: {formatCurrency(card.creditLimit)}
-              </p>
+              <div className="grid grid-cols-2 gap-2 font-numeric text-sm">
+                <p
+                  className={
+                    card.cycleUsage > card.creditLimit
+                      ? 'font-semibold text-destructive'
+                      : undefined
+                  }
+                >
+                  {es.finance.creditCards.cycleUsageLabel}: {formatCurrency(card.cycleUsage)}
+                </p>
+                <p>
+                  {es.finance.creditCards.limitLabel}: {formatCurrency(card.creditLimit)}
+                </p>
+              </div>
+
+              {card.cycleUsage > card.creditLimit && (
+                <p className="text-xs font-medium text-destructive">
+                  {es.finance.creditCards.overLimitLabel}
+                </p>
+              )}
             </Card>
           ))}
         </div>

@@ -9,6 +9,7 @@ import TransactionsPage from './transactions/transactions-page'
 import SavingsPage from './savings/savings-page'
 import ObligationsPage from './obligations/obligations-page'
 import CreditCardsPage from './credit-cards/credit-cards-page'
+import BudgetsPage from './budgets/budgets-page'
 import { useTransactionsSummary } from './transactions/hooks'
 import { useObligations } from './obligations/hooks'
 import { useCreditCards } from './credit-cards/hooks'
@@ -97,6 +98,7 @@ export default function FinancePage() {
       <Tabs defaultValue="transactions" className="gap-6">
         <TabsList className="w-full sm:w-fit">
           <TabsTrigger value="transactions">{es.finance.tabs.transactions}</TabsTrigger>
+          <TabsTrigger value="budgets">{es.finance.tabs.budgets}</TabsTrigger>
           <TabsTrigger value="savings">{es.finance.tabs.savings}</TabsTrigger>
           <TabsTrigger value="obligations">{es.finance.tabs.obligations}</TabsTrigger>
           <TabsTrigger value="creditCards">{es.finance.tabs.creditCards}</TabsTrigger>
@@ -104,6 +106,9 @@ export default function FinancePage() {
 
         <TabsContent value="transactions">
           <TransactionsPage />
+        </TabsContent>
+        <TabsContent value="budgets">
+          <BudgetsPage />
         </TabsContent>
         <TabsContent value="savings">
           <SavingsPage />

@@ -12,9 +12,9 @@ public class RegisterRequestValidatorTests
     {
         FirstName = "Ana",
         LastName = "Pérez",
-        DocumentId = "1701234567",
+        DocumentId = "1020304050",
         Email = "ana@correo.com",
-        PhoneNumber = "0991234567",
+        PhoneNumber = "3001234567",
         Password = "Password123!",
     };
 
@@ -55,8 +55,8 @@ public class RegisterRequestValidatorTests
     }
 
     [Theory]
-    [InlineData("1234567890")] // dígito verificador incorrecto
-    [InlineData("9901234567")] // provincia inválida
+    [InlineData("12345")] // longitud incorrecta
+    [InlineData("0123456789")] // no puede empezar en 0
     [InlineData("")]
     public void Falla_cuando_la_cedula_no_es_valida(string documentId)
     {
@@ -69,7 +69,7 @@ public class RegisterRequestValidatorTests
     [Theory]
     [InlineData("")]
     [InlineData("12345")]
-    [InlineData("0512345678")]
+    [InlineData("2001234567")] // no empieza en 3
     public void Falla_cuando_el_telefono_no_es_valido(string phoneNumber)
     {
         var dto = Valid();

@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { es } from '@/shared/i18n/es'
 import { useSessionStore } from '@/shared/store/session-store'
-import { ecuadorianPhoneRegex, isValidEcuadorianCedula } from '@/shared/lib/ecuadorian-document-id'
+import { colombianPhoneRegex, isValidColombianCedula } from '@/shared/lib/colombian-document-id'
 import { register } from './api'
 import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
@@ -27,7 +27,7 @@ const registerSchema = z
     documentId: z
       .string()
       .min(1, es.register.validation.documentIdRequired)
-      .refine(isValidEcuadorianCedula, es.register.validation.documentIdInvalid),
+      .refine(isValidColombianCedula, es.register.validation.documentIdInvalid),
     email: z
       .string()
       .min(1, es.register.validation.emailRequired)
@@ -35,7 +35,7 @@ const registerSchema = z
     phoneNumber: z
       .string()
       .min(1, es.register.validation.phoneNumberRequired)
-      .regex(ecuadorianPhoneRegex, es.register.validation.phoneNumberInvalid),
+      .regex(colombianPhoneRegex, es.register.validation.phoneNumberInvalid),
     password: z
       .string()
       .min(1, es.register.validation.passwordRequired)

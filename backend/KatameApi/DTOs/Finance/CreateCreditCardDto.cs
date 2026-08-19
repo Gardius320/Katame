@@ -6,4 +6,6 @@ public class CreateCreditCardDto
     public int StatementDay { get; set; }
     public int PaymentDay { get; set; }
     public decimal CreditLimit { get; set; }
+    public string? LogoDataUrl { get; set; }
+    public string? Bank { get; set; }
 }

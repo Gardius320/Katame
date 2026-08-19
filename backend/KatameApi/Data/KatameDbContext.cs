@@ -20,6 +20,7 @@ public class KatameDbContext : DbContext
     public DbSet<Subscription> Subscriptions => Set<Subscription>();
     public DbSet<Goal> Goals => Set<Goal>();
     public DbSet<Project> Projects => Set<Project>();
+    public DbSet<Budget> Budgets => Set<Budget>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

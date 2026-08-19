@@ -47,7 +47,7 @@ public class TodayService : ITodayService
         var balance = transactions.Sum(t => t.Type == "income" ? t.Amount : -t.Amount);
         var balanceTrend = BuildBalanceTrend(transactions, today);
 
-        var upcomingDueDates = await BuildUpcomingDueDatesAsync(today);
+        var upcomingDueDates = await BuildUpcomingDueDatesAsync(today, transactions);
 
         var trainingDays = await _trainingDayRepository.GetAllAsync();
         var todayTraining = trainingDays.FirstOrDefault(d => d.DayOfWeek == today.DayOfWeek);
@@ -91,7 +91,7 @@ public class TodayService : ITodayService
         return trend;
     }
 
-    private async Task<List<UpcomingDueDto>> BuildUpcomingDueDatesAsync(DateTime today)
+    private async Task<List<UpcomingDueDto>> BuildUpcomingDueDatesAsync(DateTime today, List<Transaction> transactions)
     {
         var windowEnd = today.AddDays(UpcomingWindowDays);
         var result = new List<UpcomingDueDto>();
@@ -110,7 +110,7 @@ public class TodayService : ITodayService
         var creditCards = await _creditCardRepository.GetAllAsync();
         foreach (var card in creditCards)
         {
-            var nextPaymentDate = GetNextOccurrence(today, card.PaymentDay);
+            var nextPaymentDate = BillingCycle.GetNextOccurrence(today, card.PaymentDay);
             if (nextPaymentDate <= windowEnd)
             {
                 result.Add(new UpcomingDueDto
@@ -118,7 +118,7 @@ public class TodayService : ITodayService
                     Type = UpcomingDueType.CreditCard,
                     Name = card.Name,
                     DueDate = nextPaymentDate,
-                    Amount = null,
+                    Amount = CalculateAmountDueAtNextPayment(card, transactions, today),
                 });
             }
         }
@@ -137,20 +137,21 @@ public class TodayService : ITodayService
         return result.OrderBy(d => d.DueDate).ToList();
     }
 
-    private static DateTime GetNextOccurrence(DateTime today, int dayOfMonth)
+    /// <summary>
+    /// El monto que se paga en la próxima fecha de pago corresponde al ciclo
+    /// que ya cerró (el corte más reciente hasta hoy), no al que todavía se
+    /// está acumulando desde ese corte.
+    /// </summary>
+    private static decimal CalculateAmountDueAtNextPayment(CreditCard card, List<Transaction> transactions, DateTime today)
     {
-        var daysInCurrentMonth = DateTime.DaysInMonth(today.Year, today.Month);
-        var clampedDay = Math.Min(dayOfMonth, daysInCurrentMonth);
-        var candidate = new DateTime(today.Year, today.Month, clampedDay, 0, 0, 0, DateTimeKind.Utc);
+        var lastStatementDate = BillingCycle.GetLastOccurrenceOnOrBefore(today, card.StatementDay);
+        var previousStatementDate = BillingCycle.GetLastOccurrenceOnOrBefore(lastStatementDate.AddDays(-1), card.StatementDay);
 
-        if (candidate.Date >= today)
-        {
-            return candidate;
-        }
-
-        var nextMonth = today.AddMonths(1);
-        var daysInNextMonth = DateTime.DaysInMonth(nextMonth.Year, nextMonth.Month);
-        var clampedNextDay = Math.Min(dayOfMonth, daysInNextMonth);
-        return new DateTime(nextMonth.Year, nextMonth.Month, clampedNextDay, 0, 0, 0, DateTimeKind.Utc);
+        return transactions
+            .Where(t => t.CreditCardId == card.Id
+                && t.Type == TransactionType.Expense
+                && t.Date.Date > previousStatementDate.Date
+                && t.Date.Date <= lastStatementDate.Date)
+            .Sum(t => t.Amount);
     }
 }

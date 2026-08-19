@@ -72,3 +72,29 @@ Historial completo en `git log` (rama `master`, 20 commits). Los dos más recien
 - **Conseguir la contraseña de aplicación de Gmail** y cargarla en Railway (`Email__SenderEmail`, `Email__SenderPassword`) para que el correo de recuperación de contraseña se envíe de verdad — es lo único que quedó a medio camino.
 - Instalar la PWA en el celular desde `https://katame-plum.vercel.app` (confirmado que el manifest + ícono + service worker se sirven bien) y confirmar que se vea como un ícono nativo en el escritorio.
 - Más allá de eso, el proyecto cumple el alcance completo de `SPEC.md` y ya está en producción. La fase 2 (opcional, nunca fue parte del alcance obligatorio) sigue siendo: Hangfire para recordatorios precalculados, Storybook, Husky, Playwright.
+
+## Corrección posterior: validación de Cédula/Teléfono era ecuatoriana, debía ser colombiana
+
+Las secciones de arriba describen la sesión donde se agregó la validación de Cédula (dígito
+verificador módulo 10, código de provincia 01-24) y Teléfono (`09XXXXXXXX`) **ecuatorianos**.
+Eso era un error: el usuario y sus usuarios son de Colombia, así que ninguna cédula ni celular
+colombiano pasaba la validación y el registro fallaba siempre.
+
+Se corrigió en una sesión posterior:
+- `Validators/EcuadorianDocumentId.cs` → renombrado a `Validators/ColombianDocumentId.cs`. Colombia
+  no usa dígito verificador ni código de provincia para la cédula de ciudadanía (es un número
+  secuencial de la Registraduría); ahora solo valida formato: solo dígitos, 6 a 10 caracteres, sin
+  cero a la izquierda.
+- `Validators/CreateUserValidator.cs`, `RegisterRequestValidator.cs`, `UpdateUserValidator.cs`:
+  mensajes y regex de teléfono actualizados a celular colombiano (`^3\d{9}$`, 10 dígitos, empieza en 3).
+- `frontend/src/shared/lib/ecuadorian-document-id.ts` → renombrado a `colombian-document-id.ts`,
+  mismo criterio replicado (debe reflejar el backend).
+- `register-page.tsx`, `user-form-dialog.tsx`, `shared/i18n/es.ts`: imports, mensajes y placeholders
+  actualizados (ejemplos ahora tipo `1020304050` / `3001234567`).
+- Tests actualizados en ambos lados (`ColombianDocumentIdTests.cs`, `CreateUserValidatorTests.cs`,
+  `RegisterRequestValidatorTests.cs`, `UpdateUserValidatorTests.cs`, `colombian-document-id.test.ts`).
+
+Pendiente: correr `dotnet test` y `npx vitest run` localmente para confirmar en verde (no se pudo
+ejecutar `dotnet test` desde el entorno de la corrección porque no tenía el SDK de .NET instalado;
+`vitest` tampoco corrió por un problema de binding nativo de `rolldown` en `node_modules`, no
+relacionado con este cambio — puede hacer falta un `npm i` limpio).
