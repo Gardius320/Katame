@@ -21,9 +21,15 @@ export function BankCombobox({ value, onChange }: BankComboboxProps) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
+  // Sincroniza `query` cuando `value` cambia desde afuera (ej. al resetear el
+  // formulario). Se ajusta durante el render en vez de en un useEffect, tal
+  // como recomienda React para "adjusting state when a prop changes" --
+  // evita el render extra y el warning de react-hooks/set-state-in-effect.
+  const [lastValue, setLastValue] = useState(value)
+  if (value !== lastValue) {
+    setLastValue(value)
     setQuery(value ?? '')
-  }, [value])
+  }
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
