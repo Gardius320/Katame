@@ -56,5 +56,12 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    // Fija VITE_API_BASE_URL para los tests: no depende de que exista un
+    // .env local (que no está versionado). Sin esto, en CI la variable
+    // queda undefined y el mock de MSW (registrado con la misma variable)
+    // no coincide con la URL real que arma axios, y el test falla.
+    env: {
+      VITE_API_BASE_URL: 'http://localhost:5057/api',
+    },
   },
 })
