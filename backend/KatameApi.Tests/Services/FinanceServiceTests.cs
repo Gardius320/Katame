@@ -79,7 +79,7 @@ public class FinanceServiceTests
     [Fact]
     public async Task CreditCardService_crea_y_elimina()
     {
-        var service = new CreditCardService(new FakeCreditCardRepository(), CreateMapper());
+        var service = new CreditCardService(new FakeCreditCardRepository(), new FakeTransactionRepository(), CreateMapper());
 
         var card = await service.CreateAsync(new CreateCreditCardDto
         {

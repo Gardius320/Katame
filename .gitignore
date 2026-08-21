@@ -27,3 +27,6 @@ Thumbs.db
 # Editors
 .vs/
 .idea/
+
+# Claude Code (config local, no es parte del proyecto)
+.claude/

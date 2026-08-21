@@ -1,5 +1,36 @@
 # Katame — Prompt de continuación
 
+## ⚠️ Migración en curso: Railway → Render + Neon (no completada todavía)
+
+Railway se dejó de usar porque el trial expiraba y pasaba a plan pago; Neon y Render se eligieron
+porque tienen tier gratuito permanente y **no piden tarjeta**. De paso se recreó el repo de GitHub
+de cero (borrado y creado de nuevo con el mismo nombre) porque el Contributors mostraba una entrada
+de "claude" que no se pudo limpiar reescribiendo el historial — el repo nuevo empezó limpio.
+
+Estado a la fecha de este cambio:
+- **Código:** ya cambiado de MySQL/Pomelo a PostgreSQL/Npgsql (`KatameApi.csproj`, `Program.cs`).
+  `ConfigureConventions`/`HavePrecision(18,2)` no cambió, aplica igual en Postgres.
+- **Migraciones:** las 14 migraciones viejas (generadas para MySQL) se van a reemplazar por una sola
+  migración `InitialCreate` nueva generada contra Postgres — no tiene sentido portarlas una por una
+  porque no hay datos de producción que preservar (la base de Neon empieza vacía).
+- **`docker-compose.yml`** y **`.env.example`**: actualizados para levantar `postgres:16` local en vez
+  de `mysql:8`. `README.md` actualizado con los comandos y el formato de connection string de Npgsql.
+- **Render:** servicio web creado (`Root Directory: backend/KatameApi`, `Dockerfile Path:
+  backend/KatameApi/Dockerfile`, plan Free), con `Jwt__Key`, `Cors__AllowedOrigin` y
+  `Frontend__BaseUrl` copiados de Railway. El primer deploy falló (esperado) porque
+  `ConnectionStrings__DefaultConnection` todavía apuntaba al MySQL interno de Railway.
+- **Neon:** cuenta creada, proyecto pendiente de generar el connection string y convertirlo al
+  formato `Host=...;Database=...;Username=...;Password=...;Ssl Mode=Require;Trust Server
+  Certificate=true` que espera Npgsql (Neon lo entrega como URI `postgresql://...`, no en ese formato).
+- **Pendiente para terminar:** correr `dotnet ef migrations add InitialCreate` contra Postgres,
+  cargar el connection string de Neon en User Secrets local y en la variable de Render, redeploy, y
+  reconectar Vercel al repo recreado (la integración vieja se rompió al borrar/recrear el repo).
+- Railway y su MySQL siguen activos por ahora como respaldo hasta confirmar que Render+Neon
+  funciona end-to-end — no cancelar el trial todavía.
+
+---
+
+
 Katame es una app personal (tareas, entrenamiento, finanzas, suscripciones, metas, proyectos, pantalla "Hoy") con backend .NET + frontend React/Vite, PWA instalable. **El alcance completo de `SPEC.md` ya está implementado**, y desde esta sesión **el proyecto también está desplegado en producción** (no depende de que la PC del usuario esté prendida).
 
 ## Estado de producción (desplegado y verificado end-to-end)

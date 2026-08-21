@@ -10,9 +10,9 @@ implementan en las siguientes iteraciones.
 
 ## Stack
 
-- **Backend:** ASP.NET Core Web API (.NET 8) + Entity Framework Core + MySQL (Pomelo)
+- **Backend:** ASP.NET Core Web API (.NET 8) + Entity Framework Core + PostgreSQL (Npgsql)
 - **Frontend:** React + Vite + TypeScript + Tailwind CSS + shadcn/ui
-- **Base de datos:** MySQL 8 en Docker
+- **Base de datos:** PostgreSQL 16 en Docker (local) / Neon en producción
 
 ## Requisitos previos
 
@@ -31,9 +31,8 @@ cp .env.example .env
 
 ```env
 # .env (raíz del proyecto, usado por docker-compose)
-MYSQL_ROOT_PASSWORD=elige-una-contraseña
-MYSQL_USER=katame_app
-MYSQL_PASSWORD=elige-otra-contraseña
+POSTGRES_USER=katame_app
+POSTGRES_PASSWORD=elige-una-contraseña
 ```
 
 El frontend usa su propio `.env` (en `frontend/`), basado en `frontend/.env.example`:
@@ -43,7 +42,7 @@ El frontend usa su propio `.env` (en `frontend/`), basado en `frontend/.env.exam
 VITE_API_BASE_URL=http://localhost:5057/api
 ```
 
-## 2. Levantar MySQL con Docker
+## 2. Levantar PostgreSQL con Docker
 
 Desde la raíz del proyecto:
 
@@ -51,8 +50,8 @@ Desde la raíz del proyecto:
 docker compose up -d
 ```
 
-Esto crea el contenedor `katame-mysql-1` con la base de datos `katame`, expuesta en
-`localhost:3306`, con los datos persistidos en un volumen nombrado.
+Esto crea el contenedor `katame-postgres-1` con la base de datos `katame`, expuesta en
+`localhost:5432`, con los datos persistidos en un volumen nombrado.
 
 ## 3. Configurar los secretos del backend
 
@@ -61,13 +60,13 @@ Se configuran vía User Secrets (usa las mismas credenciales que pusiste en `.en
 
 ```bash
 cd backend/KatameApi
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" "server=localhost;port=3306;database=katame;user=katame_app;password=TU_MYSQL_PASSWORD;"
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=katame;Username=katame_app;Password=TU_POSTGRES_PASSWORD;"
 dotnet user-secrets set "Jwt:Key" "una-clave-larga-y-aleatoria-de-al-menos-32-caracteres"
 ```
 
 ## 4. Aplicar las migraciones de Entity Framework
 
-Con MySQL arriba y los secretos configurados:
+Con PostgreSQL arriba y los secretos configurados:
 
 ```bash
 cd backend/KatameApi
@@ -126,7 +125,7 @@ npm run build
 
 ```
 Katame/
-├── docker-compose.yml       # MySQL 8
+├── docker-compose.yml       # PostgreSQL 16
 ├── backend/
 │   ├── KatameApi/           # API (Controllers, Services, Repositories, Models, DTOs, Data)
 │   └── KatameApi.Tests/     # xUnit

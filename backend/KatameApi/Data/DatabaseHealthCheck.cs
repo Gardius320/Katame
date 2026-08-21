@@ -15,7 +15,7 @@ public class DatabaseHealthCheck : IHealthCheck
     {
         var canConnect = await _context.Database.CanConnectAsync(cancellationToken);
         return canConnect
-            ? HealthCheckResult.Healthy("MySQL disponible.")
-            : HealthCheckResult.Unhealthy("No se pudo conectar a MySQL.");
+            ? HealthCheckResult.Healthy("PostgreSQL disponible.")
+            : HealthCheckResult.Unhealthy("No se pudo conectar a PostgreSQL.");
     }
 }

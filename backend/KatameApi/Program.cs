@@ -20,14 +20,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((context, services, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
-// Base de datos (MySQL vía Pomelo)
+// Base de datos (PostgreSQL vía Npgsql, alojada en Neon en producción)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Falta la cadena de conexión 'DefaultConnection'. Configúrala con User Secrets.");
 
-// Versión fija en vez de ServerVersion.AutoDetect: docker-compose.yml usa mysql:8, y
-// AutoDetect exige una conexión viva incluso para operaciones de diseño (dotnet ef migrations).
 builder.Services.AddDbContext<KatameDbContext>(options =>
-    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 0))));
+    options.UseNpgsql(connectionString));
 
 // JWT
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
@@ -151,7 +149,7 @@ builder.Services.AddScoped<ITodayService, TodayService>();
 
 // Health checks
 builder.Services.AddHealthChecks()
-    .AddCheck<DatabaseHealthCheck>("mysql");
+    .AddCheck<DatabaseHealthCheck>("postgres");
 
 // Swagger con soporte de JWT Bearer
 builder.Services.AddEndpointsApiExplorer();
