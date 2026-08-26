@@ -1,7 +1,8 @@
 namespace KatameApi.Models;
 
-public class Project : BaseEntity
+public class Project : BaseEntity, IUserOwned
 {
+    public int UserId { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string Status { get; set; } = ProjectStatus.Active;

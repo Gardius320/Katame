@@ -1,8 +1,9 @@
 namespace KatameApi.Models;
 
-public class CreditCard
+public class CreditCard : IUserOwned
 {
     public int Id { get; set; }
+    public int UserId { get; set; }
     public string Name { get; set; } = string.Empty;
     public int StatementDay { get; set; }
     public int PaymentDay { get; set; }

@@ -1,7 +1,8 @@
 namespace KatameApi.Models;
 
-public class Transaction : BaseEntity
+public class Transaction : BaseEntity, IUserOwned
 {
+    public int UserId { get; set; }
     public decimal Amount { get; set; }
     public string Type { get; set; } = string.Empty;
     public string Category { get; set; } = string.Empty;

@@ -1,13 +1,28 @@
 using Microsoft.EntityFrameworkCore;
 using KatameApi.Models;
+using KatameApi.Services;
 
 namespace KatameApi.Data;
 
 public class KatameDbContext : DbContext
 {
-    public KatameDbContext(DbContextOptions<KatameDbContext> options) : base(options)
+    private readonly ICurrentUserService _currentUserService;
+
+    public KatameDbContext(DbContextOptions<KatameDbContext> options, ICurrentUserService currentUserService)
+        : base(options)
     {
+        _currentUserService = currentUserService;
     }
+
+    /// <summary>
+    /// Id del usuario autenticado en la request actual. Se usa en el filtro
+    /// global de aislamiento por usuario (ver OnModelCreating) y para asignar
+    /// el dueño automáticamente al guardar una entidad nueva (ver
+    /// SaveChangesAsync). Es una propiedad de instancia -- no un valor fijo --
+    /// para que el mismo modelo (compilado una sola vez) sirva para todas las
+    /// requests, cada una con su propio usuario.
+    /// </summary>
+    public int CurrentUserId => _currentUserService.UserId;
 
     public DbSet<User> Users => Set<User>();
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
@@ -32,18 +47,41 @@ public class KatameDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Query filter global de soft delete para toda entidad que herede de BaseEntity.
+        // Filtro global combinado: soft delete (toda entidad que hereda de BaseEntity)
+        // + aislamiento por usuario (toda entidad que implementa IUserOwned). Se arma
+        // dinámicamente para no repetir la misma configuración en cada entidad -- si
+        // mañana se agrega una entidad nueva, con solo heredar/implementar ya queda
+        // protegida automáticamente.
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
-            if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
-            {
-                var parameter = System.Linq.Expressions.Expression.Parameter(entityType.ClrType, "e");
-                var property = System.Linq.Expressions.Expression.Property(parameter, nameof(BaseEntity.IsDeleted));
-                var falseConstant = System.Linq.Expressions.Expression.Constant(false);
-                var equalExpression = System.Linq.Expressions.Expression.Equal(property, falseConstant);
-                var lambda = System.Linq.Expressions.Expression.Lambda(equalExpression, parameter);
+            var clrType = entityType.ClrType;
+            var parameter = System.Linq.Expressions.Expression.Parameter(clrType, "e");
+            System.Linq.Expressions.Expression? filter = null;
 
-                modelBuilder.Entity(entityType.ClrType).HasQueryFilter(lambda);
+            if (typeof(BaseEntity).IsAssignableFrom(clrType))
+            {
+                var isDeletedProperty = System.Linq.Expressions.Expression.Property(parameter, nameof(BaseEntity.IsDeleted));
+                filter = System.Linq.Expressions.Expression.Equal(isDeletedProperty, System.Linq.Expressions.Expression.Constant(false));
+            }
+
+            if (typeof(IUserOwned).IsAssignableFrom(clrType))
+            {
+                // e.UserId == this.CurrentUserId -- al referenciar una propiedad de la
+                // instancia del contexto (no un valor fijo), EF Core evalúa esta parte
+                // del filtro con el usuario de cada request, no con uno solo grabado
+                // al armar el modelo.
+                var userIdProperty = System.Linq.Expressions.Expression.Property(parameter, nameof(IUserOwned.UserId));
+                var currentUserId = System.Linq.Expressions.Expression.Property(
+                    System.Linq.Expressions.Expression.Constant(this), nameof(CurrentUserId));
+                var ownedByCurrentUser = System.Linq.Expressions.Expression.Equal(userIdProperty, currentUserId);
+
+                filter = filter is null ? ownedByCurrentUser : System.Linq.Expressions.Expression.AndAlso(filter, ownedByCurrentUser);
+            }
+
+            if (filter is not null)
+            {
+                var lambda = System.Linq.Expressions.Expression.Lambda(filter, parameter);
+                modelBuilder.Entity(clrType).HasQueryFilter(lambda);
             }
         }
 
@@ -87,10 +125,26 @@ public class KatameDbContext : DbContext
             .HasForeignKey(t => t.CreditCardId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        // Cada entidad "propia" de un usuario apunta a su dueño en Users. Si se borra
+        // el usuario, se borra en cascada todo lo suyo (tareas, transacciones, etc.).
+        modelBuilder.Entity<Budget>().HasOne<User>().WithMany().HasForeignKey(b => b.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CreditCard>().HasOne<User>().WithMany().HasForeignKey(c => c.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Goal>().HasOne<User>().WithMany().HasForeignKey(g => g.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Obligation>().HasOne<User>().WithMany().HasForeignKey(o => o.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Project>().HasOne<User>().WithMany().HasForeignKey(p => p.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<SavingsGoal>().HasOne<User>().WithMany().HasForeignKey(s => s.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Subscription>().HasOne<User>().WithMany().HasForeignKey(s => s.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<TaskItem>().HasOne<User>().WithMany().HasForeignKey(t => t.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<TrainingDay>().HasOne<User>().WithMany().HasForeignKey(d => d.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Transaction>().HasOne<User>().WithMany().HasForeignKey(t => t.UserId).OnDelete(DeleteBehavior.Cascade);
+
+        // Plantilla inicial de entrenamiento: se sigue sembrando para el usuario admin
+        // (Id = 1). Cada usuario nuevo arranca sin días de entrenamiento y arma los
+        // suyos desde cero.
         modelBuilder.Entity<TrainingDay>().HasData(
-            new TrainingDay { Id = 1, DayOfWeek = DayOfWeek.Monday, Title = "Empuje" },
-            new TrainingDay { Id = 2, DayOfWeek = DayOfWeek.Wednesday, Title = "Tirón" },
-            new TrainingDay { Id = 3, DayOfWeek = DayOfWeek.Friday, Title = "Pierna" });
+            new TrainingDay { Id = 1, UserId = 1, DayOfWeek = DayOfWeek.Monday, Title = "Empuje" },
+            new TrainingDay { Id = 2, UserId = 1, DayOfWeek = DayOfWeek.Wednesday, Title = "Tirón" },
+            new TrainingDay { Id = 3, UserId = 1, DayOfWeek = DayOfWeek.Friday, Title = "Pierna" });
 
         modelBuilder.Entity<Exercise>().HasData(
             new Exercise { Id = 1, TrainingDayId = 1, Name = "Press banca", SetsReps = "4x8" },
@@ -99,5 +153,34 @@ public class KatameDbContext : DbContext
             new Exercise { Id = 4, TrainingDayId = 2, Name = "Remo con barra", SetsReps = "3x10" },
             new Exercise { Id = 5, TrainingDayId = 3, Name = "Sentadilla", SetsReps = "4x8" },
             new Exercise { Id = 6, TrainingDayId = 3, Name = "Peso muerto rumano", SetsReps = "3x10" });
+    }
+
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        StampCurrentUserOnNewEntities();
+        return base.SaveChanges(acceptAllChangesOnSuccess);
+    }
+
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        StampCurrentUserOnNewEntities();
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+
+    /// <summary>
+    /// Asigna automáticamente el dueño de toda entidad "propia" de un usuario
+    /// que se está creando (UserId = 0, el default cuando el código que la
+    /// arma en el Service nunca lo tocó). Así ningún Service necesita acordarse
+    /// de setear el UserId a mano -- basta con implementar IUserOwned.
+    /// </summary>
+    private void StampCurrentUserOnNewEntities()
+    {
+        foreach (var entry in ChangeTracker.Entries<IUserOwned>())
+        {
+            if (entry.State == EntityState.Added && entry.Entity.UserId == 0)
+            {
+                entry.Entity.UserId = CurrentUserId;
+            }
+        }
     }
 }

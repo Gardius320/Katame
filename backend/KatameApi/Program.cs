@@ -119,7 +119,12 @@ builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>()
 // AutoMapper (perfiles se agregan a medida que se suman módulos)
 builder.Services.AddAutoMapper(cfg => { }, typeof(Program).Assembly);
 
+// Da acceso al HttpContext de la request actual desde servicios que no lo reciben
+// por inyección normal (lo necesita ICurrentUserService para leer el usuario del JWT).
+builder.Services.AddHttpContextAccessor();
+
 // Repositorios y servicios
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();

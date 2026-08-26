@@ -1,7 +1,8 @@
 namespace KatameApi.Models;
 
-public class TaskItem : BaseEntity
+public class TaskItem : BaseEntity, IUserOwned
 {
+    public int UserId { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Status { get; set; } = TaskItemStatus.Pending;
     public DateTime? Date { get; set; }

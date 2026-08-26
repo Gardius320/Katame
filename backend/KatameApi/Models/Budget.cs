@@ -1,7 +1,8 @@
 namespace KatameApi.Models;
 
-public class Budget : BaseEntity
+public class Budget : BaseEntity, IUserOwned
 {
+    public int UserId { get; set; }
     public string Category { get; set; } = string.Empty;
     public decimal Amount { get; set; }
     public string Period { get; set; } = BudgetPeriod.Monthly;

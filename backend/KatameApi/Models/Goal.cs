@@ -1,8 +1,9 @@
 namespace KatameApi.Models;
 
-public class Goal
+public class Goal : IUserOwned
 {
     public int Id { get; set; }
+    public int UserId { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Category { get; set; } = string.Empty;
     public int ProgressPercentage { get; set; }
