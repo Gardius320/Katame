@@ -43,10 +43,11 @@ public class AuthService : IAuthService
 
         var user = new User
         {
-            // El formulario de registro no pide un nombre de usuario propio: se genera
-            // uno a partir del correo (parte antes de la '@'), con sufijo numérico si
-            // ya está en uso, para no violar el índice único de Username.
-            Username = await GenerateUniqueUsernameAsync(request.Email),
+            // El formulario de registro no pide un nombre de usuario propio: se usa
+            // el correo completo como Username. Como el correo ya se valida como
+            // único más arriba (ExistsByEmailAsync), el índice único de Username
+            // queda cubierto sin necesidad de generar ni desambiguar nada.
+            Username = request.Email,
             FirstName = request.FirstName,
             LastName = request.LastName,
             DocumentId = request.DocumentId,
@@ -60,25 +61,6 @@ public class AuthService : IAuthService
         await _userRepository.SaveChangesAsync();
 
         return await IssueTokensAsync(user);
-    }
-
-    private async Task<string> GenerateUniqueUsernameAsync(string email)
-    {
-        var localPart = email.Split('@')[0];
-        var baseUsername = new string(localPart.Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
-        if (string.IsNullOrEmpty(baseUsername))
-        {
-            baseUsername = "usuario";
-        }
-
-        var candidate = baseUsername;
-        var suffix = 1;
-        while (await _userRepository.ExistsByUsernameAsync(candidate))
-        {
-            candidate = $"{baseUsername}{++suffix}";
-        }
-
-        return candidate;
     }
 
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)

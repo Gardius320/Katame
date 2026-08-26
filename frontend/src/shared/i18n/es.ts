@@ -57,7 +57,7 @@ export const es = {
     tagline: 'Panel personal',
     loginTitle: 'Iniciar sesión',
     usernameLabel: 'Usuario',
-    usernamePlaceholder: 'tu_usuario',
+    usernamePlaceholder: 'tu@correo.com',
     passwordLabel: 'Contraseña',
     passwordPlaceholder: '••••••••',
     loginButton: 'Entrar',
@@ -123,7 +123,7 @@ export const es = {
     confirmPasswordLabel: 'Nuevamente contraseña',
     registerButton: 'Crear cuenta',
     registering: 'Creando cuenta...',
-    registerSuccess: (username: string) => `Cuenta creada. Tu usuario es "${username}".`,
+    registerSuccess: () => 'Cuenta creada. Ya puedes iniciar sesión con tu correo y tu contraseña.',
     hasAccount: '¿Ya tienes cuenta?',
     loginLink: 'Iniciar sesión',
     validation: {

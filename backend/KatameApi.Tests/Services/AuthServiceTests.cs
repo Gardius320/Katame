@@ -44,24 +44,13 @@ public class AuthServiceTests
     };
 
     [Fact]
-    public async Task RegisterAsync_genera_el_username_a_partir_del_correo()
+    public async Task RegisterAsync_usa_el_correo_completo_como_username()
     {
         var service = CreateService(out _);
 
         var result = await service.RegisterAsync(SampleRegister(email: "juan.perez@correo.com"));
 
-        Assert.Equal("juanperez", result.Username);
-    }
-
-    [Fact]
-    public async Task RegisterAsync_agrega_sufijo_numerico_si_el_username_generado_ya_existe()
-    {
-        var service = CreateService(out _);
-        await service.RegisterAsync(SampleRegister(email: "juan@correo.com", documentId: "1701234567"));
-
-        var second = await service.RegisterAsync(SampleRegister(email: "juan@otrocorreo.com", documentId: "1712345675"));
-
-        Assert.Equal("juan2", second.Username);
+        Assert.Equal("juan.perez@correo.com", result.Username);
     }
 
     [Fact]
@@ -83,7 +72,7 @@ public class AuthServiceTests
 
         await service.RegisterAsync(SampleRegister());
 
-        var stored = await repository.GetByUsernameAsync("ana");
+        var stored = await repository.GetByUsernameAsync("ana@correo.com");
         Assert.NotNull(stored);
         Assert.Equal("Ana", stored!.FirstName);
         Assert.Equal("Pérez", stored.LastName);
@@ -122,9 +111,9 @@ public class AuthServiceTests
         var service = CreateService(out _);
         await service.RegisterAsync(SampleRegister());
 
-        var result = await service.LoginAsync(new LoginRequestDto { Username = "ana", Password = "Password123!" });
+        var result = await service.LoginAsync(new LoginRequestDto { Username = "ana@correo.com", Password = "Password123!" });
 
-        Assert.Equal("ana", result.Username);
+        Assert.Equal("ana@correo.com", result.Username);
         Assert.False(string.IsNullOrEmpty(result.AccessToken));
     }
 
@@ -146,7 +135,7 @@ public class AuthServiceTests
         await service.RegisterAsync(SampleRegister());
 
         var exception = await Assert.ThrowsAsync<ApiException>(() =>
-            service.LoginAsync(new LoginRequestDto { Username = "ana", Password = "Incorrecta123!" }));
+            service.LoginAsync(new LoginRequestDto { Username = "ana@correo.com", Password = "Incorrecta123!" }));
 
         Assert.Equal(HttpStatusCode.Unauthorized, exception.StatusCode);
     }
@@ -159,7 +148,7 @@ public class AuthServiceTests
 
         var refreshed = await service.RefreshAsync(new RefreshRequestDto { RefreshToken = registered.RefreshToken });
 
-        Assert.Equal("ana", refreshed.Username);
+        Assert.Equal("ana@correo.com", refreshed.Username);
         Assert.NotEqual(registered.RefreshToken, refreshed.RefreshToken);
     }
 
@@ -179,7 +168,7 @@ public class AuthServiceTests
     {
         var service = CreateService(out var repository);
         var registered = await service.RegisterAsync(SampleRegister());
-        var user = await repository.GetByUsernameAsync("ana");
+        var user = await repository.GetByUsernameAsync("ana@correo.com");
         user!.RefreshTokenExpiry = DateTime.UtcNow.AddDays(-1);
 
         var exception = await Assert.ThrowsAsync<ApiException>(() =>
@@ -201,7 +190,7 @@ public class AuthServiceTests
         Assert.Equal("Ana", sent.FirstName);
         Assert.Contains("/reset-password?token=", sent.ResetLink);
 
-        var stored = await repository.GetByUsernameAsync("ana");
+        var stored = await repository.GetByUsernameAsync("ana@correo.com");
         Assert.NotNull(stored!.PasswordResetToken);
         Assert.True(stored.PasswordResetTokenExpiry > DateTime.UtcNow);
     }
@@ -222,12 +211,12 @@ public class AuthServiceTests
         var service = CreateService(out var repository, out var emailService);
         await service.RegisterAsync(SampleRegister(email: "ana@correo.com"));
         await service.ForgotPasswordAsync(new ForgotPasswordRequestDto { Email = "ana@correo.com" });
-        var token = (await repository.GetByUsernameAsync("ana"))!.PasswordResetToken!;
+        var token = (await repository.GetByUsernameAsync("ana@correo.com"))!.PasswordResetToken!;
 
         await service.ResetPasswordAsync(new ResetPasswordRequestDto { Token = token, NewPassword = "NuevaPassword123!" });
 
-        var result = await service.LoginAsync(new LoginRequestDto { Username = "ana", Password = "NuevaPassword123!" });
-        Assert.Equal("ana", result.Username);
+        var result = await service.LoginAsync(new LoginRequestDto { Username = "ana@correo.com", Password = "NuevaPassword123!" });
+        Assert.Equal("ana@correo.com", result.Username);
     }
 
     [Fact]
@@ -236,7 +225,7 @@ public class AuthServiceTests
         var service = CreateService(out var repository, out _);
         await service.RegisterAsync(SampleRegister(email: "ana@correo.com"));
         await service.ForgotPasswordAsync(new ForgotPasswordRequestDto { Email = "ana@correo.com" });
-        var token = (await repository.GetByUsernameAsync("ana"))!.PasswordResetToken!;
+        var token = (await repository.GetByUsernameAsync("ana@correo.com"))!.PasswordResetToken!;
         await service.ResetPasswordAsync(new ResetPasswordRequestDto { Token = token, NewPassword = "NuevaPassword123!" });
 
         var exception = await Assert.ThrowsAsync<ApiException>(() =>
@@ -262,7 +251,7 @@ public class AuthServiceTests
         var service = CreateService(out var repository, out _);
         await service.RegisterAsync(SampleRegister(email: "ana@correo.com"));
         await service.ForgotPasswordAsync(new ForgotPasswordRequestDto { Email = "ana@correo.com" });
-        var user = await repository.GetByUsernameAsync("ana");
+        var user = await repository.GetByUsernameAsync("ana@correo.com");
         var token = user!.PasswordResetToken!;
         user.PasswordResetTokenExpiry = DateTime.UtcNow.AddMinutes(-1);
 
@@ -278,7 +267,7 @@ public class AuthServiceTests
         var service = CreateService(out var repository, out _);
         var registered = await service.RegisterAsync(SampleRegister(email: "ana@correo.com"));
         await service.ForgotPasswordAsync(new ForgotPasswordRequestDto { Email = "ana@correo.com" });
-        var token = (await repository.GetByUsernameAsync("ana"))!.PasswordResetToken!;
+        var token = (await repository.GetByUsernameAsync("ana@correo.com"))!.PasswordResetToken!;
 
         await service.ResetPasswordAsync(new ResetPasswordRequestDto { Token = token, NewPassword = "NuevaPassword123!" });
 

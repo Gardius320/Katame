@@ -70,7 +70,7 @@ export function RegisterPage() {
     mutationFn: register,
     onSuccess: (data) => {
       setSession(data)
-      toast.success(es.register.registerSuccess(data.username))
+      toast.success(es.register.registerSuccess())
       navigate('/today', { replace: true })
     },
   })
