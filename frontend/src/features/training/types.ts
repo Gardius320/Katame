@@ -29,3 +29,9 @@ export interface ExerciseFormValues {
   name: string
   setsReps: string
 }
+
+export interface TrainingStreak {
+  currentStreakDays: number
+  longestStreakDays: number
+  isNewCompletion: boolean
+}

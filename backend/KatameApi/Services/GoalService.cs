@@ -1,6 +1,7 @@
 using System.Net;
 using AutoMapper;
 using KatameApi.DTOs.Goals;
+using KatameApi.Extensions;
 using KatameApi.Middleware;
 using KatameApi.Models;
 using KatameApi.Repositories;
@@ -31,7 +32,7 @@ public class GoalService : IGoalService
             Title = request.Title,
             Category = request.Category,
             ProgressPercentage = request.ProgressPercentage,
-            DueDate = request.DueDate?.ToUniversalTime(),
+            DueDate = request.DueDate?.AsUtc(),
         };
 
         await _goalRepository.AddAsync(goal);
@@ -47,7 +48,7 @@ public class GoalService : IGoalService
         goal.Title = request.Title;
         goal.Category = request.Category;
         goal.ProgressPercentage = request.ProgressPercentage;
-        goal.DueDate = request.DueDate?.ToUniversalTime();
+        goal.DueDate = request.DueDate?.AsUtc();
 
         await _goalRepository.SaveChangesAsync();
 

@@ -133,6 +133,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITrainingDayRepository, TrainingDayRepository>();
+builder.Services.AddScoped<ITrainingCompletionRepository, TrainingCompletionRepository>();
+builder.Services.AddScoped<ITrainingStreakRepository, TrainingStreakRepository>();
 builder.Services.AddScoped<ITrainingService, TrainingService>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
@@ -150,6 +152,10 @@ builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
 builder.Services.AddScoped<IBudgetService, BudgetService>();
+builder.Services.AddScoped<IFinancialProfileRepository, FinancialProfileRepository>();
+builder.Services.AddScoped<IFinancialProfileService, FinancialProfileService>();
+builder.Services.AddScoped<IUserAchievementRepository, UserAchievementRepository>();
+builder.Services.AddScoped<IAchievementService, AchievementService>();
 builder.Services.AddScoped<ITodayService, TodayService>();
 
 // Health checks

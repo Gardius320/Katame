@@ -13,5 +13,9 @@ public class CreateObligationValidator : AbstractValidator<CreateObligationDto>
 
         RuleFor(x => x.Amount)
             .GreaterThan(0).WithMessage("El monto debe ser mayor a cero.");
+
+        RuleFor(x => x.RecurrenceFrequency)
+            .NotNull().WithMessage("Selecciona si la obligación es quincenal o mensual.")
+            .When(x => x.IsRecurring);
     }
 }

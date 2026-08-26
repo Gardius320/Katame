@@ -31,6 +31,10 @@ const savingsFormSchema = z.object({
   targetAmount: z.number().positive(es.finance.savings.validation.targetAmountRequired),
   currentAmount: z.number().min(0, es.finance.savings.validation.currentAmountInvalid),
   dueDate: z.string(),
+  monthlyContributionTarget: z
+    .number()
+    .positive(es.finance.savings.validation.monthlyContributionTargetInvalid)
+    .nullable(),
 })
 
 type SavingsFormSchema = z.infer<typeof savingsFormSchema>
@@ -54,7 +58,13 @@ export function SavingsFormDialog({ open, onOpenChange, goal }: SavingsFormDialo
 
   const form = useForm<SavingsFormSchema>({
     resolver: zodResolver(savingsFormSchema),
-    defaultValues: { name: '', targetAmount: 0, currentAmount: 0, dueDate: '' },
+    defaultValues: {
+      name: '',
+      targetAmount: 0,
+      currentAmount: 0,
+      dueDate: '',
+      monthlyContributionTarget: null,
+    },
   })
 
   useEffect(() => {
@@ -64,6 +74,7 @@ export function SavingsFormDialog({ open, onOpenChange, goal }: SavingsFormDialo
         targetAmount: goal?.targetAmount ?? 0,
         currentAmount: goal?.currentAmount ?? 0,
         dueDate: toDateInputValue(goal?.dueDate ?? null),
+        monthlyContributionTarget: goal?.monthlyContributionTarget ?? null,
       })
     }
   }, [open, goal, form])
@@ -74,6 +85,7 @@ export function SavingsFormDialog({ open, onOpenChange, goal }: SavingsFormDialo
       targetAmount: values.targetAmount,
       currentAmount: values.currentAmount,
       dueDate: values.dueDate ? new Date(values.dueDate).toISOString() : null,
+      monthlyContributionTarget: values.monthlyContributionTarget,
     }
 
     const onSuccess = () => onOpenChange(false)
@@ -168,6 +180,32 @@ export function SavingsFormDialog({ open, onOpenChange, goal }: SavingsFormDialo
                   <FormLabel>{es.finance.savings.fields.dueDate}</FormLabel>
                   <FormControl>
                     <Input type="date" className="font-numeric" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="monthlyContributionTarget"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{es.finance.savings.fields.monthlyContributionTarget}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      className="font-numeric"
+                      placeholder={es.finance.savings.fields.monthlyContributionTargetPlaceholder}
+                      name={field.name}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                      value={field.value ?? ''}
+                      onChange={(e) => {
+                        field.onChange(e.target.value === '' ? null : e.target.valueAsNumber)
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

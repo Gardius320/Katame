@@ -15,6 +15,7 @@ export const es = {
     goals: 'Metas',
     projects: 'Proyectos',
     subscriptions: 'Suscripciones',
+    achievements: 'Logros',
     users: 'Usuarios',
     more: 'Más',
   },
@@ -182,6 +183,14 @@ export const es = {
     weeklyGoal: {
       label: 'Meta semanal',
     },
+    streak: {
+      currentLabel: 'Racha actual',
+      longestLabel: 'Récord: {count} días',
+      markCompletedToday: 'Ya entrené hoy',
+      alreadyMarkedToday: 'Ya habías marcado hoy como entrenado.',
+      dialogTitle: '¡Racha de entrenamiento!',
+      dialogDescription: 'Sigue entrenando tus días planeados para mantenerla viva.',
+    },
     confirmDeleteDayDescription:
       'Se eliminará el día y todos sus ejercicios. Esta acción no se puede deshacer.',
     fields: {
@@ -297,6 +306,11 @@ export const es = {
       progressLabel: '{spent} de {amount}',
       resetsLabel: 'Se reinicia el {date}',
       overLimitLabel: 'Superaste el presupuesto de este ciclo',
+      antExpenses: {
+        title: 'Cuidado con estos gastos hormiga',
+        description: 'Son categorías con gastos pequeños pero frecuentes este mes -- juntos, te pueden consumir más de lo que parece.',
+        frequencyLabel: '{count} veces este mes',
+      },
       period: {
         weekly: 'Semanal',
         biweekly: 'Quincenal',
@@ -334,18 +348,56 @@ export const es = {
         targetAmount: 'Monto objetivo',
         currentAmount: 'Monto actual',
         dueDate: 'Fecha límite',
+        monthlyContributionTarget: 'Ahorro mensual planeado (opcional)',
+        monthlyContributionTargetPlaceholder: 'Ej. 400.000',
       },
       progressLabel: '{current} de {target}',
+      almostThere: '¡Ya casi!',
+      goalReached: '¡Meta cumplida!',
+      addFunds: 'Agregar dinero',
+      addFundsTitle: 'Agregar a {name}',
+      addFundsDescription: 'Ingresa cuánto quieres sumarle a lo que ya tienes ahorrado.',
+      fieldsContribute: {
+        amount: 'Monto a agregar',
+        amountPlaceholder: 'Ej. 3.000.000',
+      },
+      perGoalMonthly: '{amount}/mes · {percent}% de tu ingreso',
+      perGoalMonthlyNoIncome: '{amount}/mes planeado',
+      streakLabel: '{count} meses seguidos ahorrando',
+      streakLabelSingular: '{count} mes seguido ahorrando',
+      streakDialogTitle: '¡Racha de ahorro!',
+      streakDialogDescription: 'Llevas aportando a "{name}" mes tras mes. Sigue así.',
+      simulator: {
+        openButton: '¿Cuándo la cumplo?',
+        title: '¿Cuándo cumples "{name}"?',
+        monthlyLabel: 'al mes',
+        projectionLabel: 'A este ritmo, la cumples en {months} meses (aprox. {date}).',
+        projectionLabelSingular: 'A este ritmo, la cumples en {months} mes (aprox. {date}).',
+        alreadyReached: 'Ya cumpliste esta meta.',
+        applyButton: 'Usar este monto como mi aporte mensual',
+      },
+      incomeCard: {
+        incomeLabel: 'Ingreso mensual',
+        editIncome: 'Editar ingreso',
+        noIncomeSet: 'Sin configurar',
+        noIncomeHint: 'Configura tu ingreso mensual para ver qué porcentaje estás ahorrando.',
+        totalSavingsLabel: 'Ahorras {amount} al mes en total · {percent}% de tu ingreso',
+      },
       validation: {
         nameRequired: 'El nombre es obligatorio.',
         nameMaxLength: 'El nombre no puede superar los 100 caracteres.',
         targetAmountRequired: 'La meta debe ser mayor a cero.',
         currentAmountInvalid: 'El monto actual no puede ser negativo.',
+        contributionAmountRequired: 'El monto a agregar debe ser mayor a cero.',
+        monthlyContributionTargetInvalid: 'El ahorro mensual planeado debe ser mayor a cero.',
+        monthlyIncomeInvalid: 'El ingreso mensual no puede ser negativo.',
       },
       toasts: {
         created: 'Meta de ahorro creada.',
         updated: 'Meta actualizada.',
         deleted: 'Meta eliminada.',
+        contributed: 'Aporte agregado a tu meta.',
+        profileUpdated: 'Ingreso mensual actualizado.',
       },
     },
     obligations: {
@@ -365,11 +417,18 @@ export const es = {
         amount: 'Monto',
         dueDate: 'Fecha de vencimiento',
         isRecurring: 'Es recurrente',
+        recurrenceFrequency: 'Frecuencia',
+      },
+      recurrenceFrequency: {
+        biweekly: 'Quincenal',
+        monthly: 'Mensual',
       },
       validation: {
         nameRequired: 'El nombre es obligatorio.',
         nameMaxLength: 'El nombre no puede superar los 100 caracteres.',
         amountRequired: 'El monto debe ser mayor a cero.',
+        dueDateRequired: 'La fecha de vencimiento es obligatoria.',
+        recurrenceFrequencyRequired: 'Selecciona si es quincenal o mensual.',
       },
       toasts: {
         created: 'Obligación creada.',
@@ -583,6 +642,17 @@ export const es = {
     tasks: {
       title: 'Tareas urgentes',
       emptyState: 'No tienes tareas urgentes.',
+    },
+  },
+
+  achievements: {
+    title: 'Logros',
+    subtitle: 'Hitos financieros y de entrenamiento que vas desbloqueando',
+    unlockedLabel: 'Logro desbloqueado',
+    unlockedOn: 'Desbloqueado el {date}',
+    categories: {
+      finanzas: 'Finanzas',
+      entrenamiento: 'Entrenamiento',
     },
   },
 } as const

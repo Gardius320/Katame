@@ -1,8 +1,13 @@
 import { apiClient } from '@/shared/api/client'
-import type { Budget, BudgetFormValues } from './types'
+import type { AntExpense, Budget, BudgetFormValues } from './types'
 
 export async function getBudgets(): Promise<Budget[]> {
   const { data } = await apiClient.get<Budget[]>('/finance/budgets')
+  return data
+}
+
+export async function getAntExpenses(): Promise<AntExpense[]> {
+  const { data } = await apiClient.get<AntExpense[]>('/finance/budgets/ant-expenses')
   return data
 }
 

@@ -1,11 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { es } from '@/shared/i18n/es'
 import { formatCurrency } from '@/shared/lib/format'
 import { cn } from '@/shared/lib/utils'
+import { useEvaluateAchievements } from '@/features/achievements/hooks'
 import { useBudgets, useDeleteBudget } from './hooks'
+import { AntExpensesCard } from './ant-expenses-card'
 import { BudgetFormDialog } from './budget-form-dialog'
 import type { Budget } from './types'
+import { AchievementUnlockedDialog } from '@/shared/components/achievement-unlocked-dialog'
 import { Button } from '@/shared/components/ui/button'
 import { Card } from '@/shared/components/ui/card'
 import { Skeleton } from '@/shared/components/ui/skeleton'
@@ -29,10 +32,31 @@ function formatResetDate(cycleEnd: string): string {
 export default function BudgetsPage() {
   const { data: budgets, isLoading } = useBudgets()
   const deleteBudget = useDeleteBudget()
+  const evaluateAchievements = useEvaluateAchievements()
 
   const [formOpen, setFormOpen] = useState(false)
   const [editingBudget, setEditingBudget] = useState<Budget | null>(null)
   const [budgetToDelete, setBudgetToDelete] = useState<Budget | null>(null)
+  const [celebration, setCelebration] = useState<{ open: boolean; title: string; description: string }>({
+    open: false,
+    title: '',
+    description: '',
+  })
+
+  // Presupuestos es donde se ve el aviso de gastos hormiga, así que también
+  // es un buen momento para revisar si eso desbloqueó "mes sin gastos
+  // hormiga" (ver AchievementService.IsAntExpenseFreeLastMonthAsync).
+  useEffect(() => {
+    evaluateAchievements.mutate(undefined, {
+      onSuccess: (newlyUnlocked) => {
+        const [first] = newlyUnlocked
+        if (first) {
+          setCelebration({ open: true, title: first.title, description: first.description })
+        }
+      },
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const openCreateForm = () => {
     setEditingBudget(null)
@@ -61,6 +85,8 @@ export default function BudgetsPage() {
           {es.finance.budgets.newBudget}
         </Button>
       </div>
+
+      <AntExpensesCard />
 
       {isLoading ? (
         <div className="grid gap-3 sm:grid-cols-2">
@@ -147,6 +173,13 @@ export default function BudgetsPage() {
       )}
 
       <BudgetFormDialog open={formOpen} onOpenChange={setFormOpen} budget={editingBudget} />
+
+      <AchievementUnlockedDialog
+        open={celebration.open}
+        onOpenChange={(open) => setCelebration((prev) => ({ ...prev, open }))}
+        title={celebration.title}
+        description={celebration.description}
+      />
 
       <AlertDialog
         open={budgetToDelete !== null}

@@ -7,6 +7,8 @@ import {
   deleteExercise,
   deleteTrainingDay,
   getTrainingDays,
+  getTrainingStreak,
+  markTrainingCompleted,
   updateExercise,
   updateTrainingDay,
 } from './api'
@@ -17,6 +19,7 @@ import type {
 } from './types'
 
 const trainingDaysQueryKey = ['training-days']
+const trainingStreakQueryKey = ['training-streak']
 
 export function useTrainingDays() {
   return useQuery({ queryKey: trainingDaysQueryKey, queryFn: getTrainingDays })
@@ -88,6 +91,24 @@ export function useUpdateExercise() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: trainingDaysQueryKey })
       toast.success(es.training.exercises.toasts.updated)
+    },
+  })
+}
+
+export function useTrainingStreak() {
+  return useQuery({ queryKey: trainingStreakQueryKey, queryFn: getTrainingStreak })
+}
+
+export function useMarkTrainingCompleted() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: markTrainingCompleted,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: trainingStreakQueryKey })
+      if (!data.isNewCompletion) {
+        toast.info(es.training.streak.alreadyMarkedToday)
+      }
     },
   })
 }

@@ -118,4 +118,33 @@ public class BudgetServiceTests
 
         Assert.Empty(await service.GetAllAsync());
     }
+
+    [Fact]
+    public async Task GetAntExpensesAsync_solo_considera_gastos_del_mes_en_curso()
+    {
+        var today = DateTime.UtcNow.Date;
+        var firstOfThisMonth = new DateTime(today.Year, today.Month, 1);
+
+        var transactions = new FakeTransactionRepository();
+        // Dentro del mes en curso: categoría chica y frecuente -> hormiga.
+        // Se usa "today" repetido (no offsets de día) para que la fecha caiga
+        // dentro de la ventana [inicio de mes, hoy] sin importar qué día del
+        // mes sea "hoy" cuando corra el test (ej. si hoy es el día 2, sumarle
+        // días al inicio de mes se pasaría de "hoy" y quedaría fuera).
+        await transactions.AddAsync(new Transaction { Amount = 5, Type = "expense", Category = "Café", Date = today });
+        await transactions.AddAsync(new Transaction { Amount = 5, Type = "expense", Category = "Café", Date = today });
+        await transactions.AddAsync(new Transaction { Amount = 5, Type = "expense", Category = "Café", Date = today });
+        await transactions.AddAsync(new Transaction { Amount = 5, Type = "expense", Category = "Café", Date = today });
+        await transactions.AddAsync(new Transaction { Amount = 500, Type = "expense", Category = "Arriendo", Date = today });
+        // Del mes pasado -> no debería contar para esta ventana.
+        await transactions.AddAsync(new Transaction { Amount = 5, Type = "expense", Category = "Café", Date = firstOfThisMonth.AddDays(-5) });
+
+        var service = CreateService(new FakeBudgetRepository(), transactions);
+
+        var result = await service.GetAntExpensesAsync();
+
+        var flagged = Assert.Single(result);
+        Assert.Equal("Café", flagged.Category);
+        Assert.Equal(4, flagged.TransactionCount);
+    }
 }

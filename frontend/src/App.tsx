@@ -30,6 +30,7 @@ const TasksPage = lazy(() => import('@/features/tasks/tasks-page'))
 const GoalsPage = lazy(() => import('@/features/goals/goals-page'))
 const ProjectsPage = lazy(() => import('@/features/projects/projects-page'))
 const SubscriptionsPage = lazy(() => import('@/features/subscriptions/subscriptions-page'))
+const AchievementsPage = lazy(() => import('@/features/achievements/achievements-page'))
 const UsersPage = lazy(() => import('@/features/users/users-page'))
 
 function RouteFallback() {
@@ -57,6 +58,7 @@ function AppRoutes() {
             <Route path="goals" element={<GoalsPage />} />
             <Route path="projects" element={<ProjectsPage />} />
             <Route path="subscriptions" element={<SubscriptionsPage />} />
+            <Route path="achievements" element={<AchievementsPage />} />
 
             <Route element={<AdminRoute />}>
               <Route path="users" element={<UsersPage />} />

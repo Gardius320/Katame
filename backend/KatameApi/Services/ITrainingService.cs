@@ -11,4 +11,6 @@ public interface ITrainingService
     Task<ExerciseDto> AddExerciseAsync(int dayId, CreateExerciseDto request);
     Task<ExerciseDto> UpdateExerciseAsync(int dayId, int exerciseId, UpdateExerciseDto request);
     Task DeleteExerciseAsync(int dayId, int exerciseId);
+    Task<TrainingStreakDto> GetStreakAsync();
+    Task<TrainingStreakDto> MarkTodayCompletedAsync();
 }

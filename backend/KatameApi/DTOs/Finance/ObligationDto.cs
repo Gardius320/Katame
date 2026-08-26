@@ -1,3 +1,5 @@
+using KatameApi.Models;
+
 namespace KatameApi.DTOs.Finance;
 
 public class ObligationDto
@@ -7,5 +9,6 @@ public class ObligationDto
     public decimal Amount { get; set; }
     public DateTime DueDate { get; set; }
     public bool IsRecurring { get; set; }
+    public RecurrenceFrequency? RecurrenceFrequency { get; set; }
     public bool IsPaid { get; set; }
 }

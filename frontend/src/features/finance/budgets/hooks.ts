@@ -1,13 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { es } from '@/shared/i18n/es'
-import { createBudget, deleteBudget, getBudgets, updateBudget } from './api'
+import { createBudget, deleteBudget, getAntExpenses, getBudgets, updateBudget } from './api'
 import type { BudgetFormValues } from './types'
 
 const budgetsQueryKey = ['budgets']
+const antExpensesQueryKey = ['ant-expenses']
 
 export function useBudgets() {
   return useQuery({ queryKey: budgetsQueryKey, queryFn: getBudgets })
+}
+
+export function useAntExpenses() {
+  return useQuery({ queryKey: antExpensesQueryKey, queryFn: getAntExpenses })
 }
 
 export function useCreateBudget() {

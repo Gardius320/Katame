@@ -36,6 +36,10 @@ public class KatameDbContext : DbContext
     public DbSet<Goal> Goals => Set<Goal>();
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<Budget> Budgets => Set<Budget>();
+    public DbSet<FinancialProfile> FinancialProfiles => Set<FinancialProfile>();
+    public DbSet<TrainingCompletion> TrainingCompletions => Set<TrainingCompletion>();
+    public DbSet<TrainingStreak> TrainingStreaks => Set<TrainingStreak>();
+    public DbSet<UserAchievement> UserAchievements => Set<UserAchievement>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
@@ -92,6 +96,21 @@ public class KatameDbContext : DbContext
             entity.HasIndex(u => u.DocumentId).IsUnique();
         });
 
+        // Un usuario no debería poder terminar con dos filas de perfil financiero
+        // (por una condición de carrera al actualizar dos veces casi al mismo tiempo).
+        modelBuilder.Entity<FinancialProfile>().HasIndex(f => f.UserId).IsUnique();
+
+        // Mismo motivo que FinancialProfile: una sola fila de récord por usuario.
+        modelBuilder.Entity<TrainingStreak>().HasIndex(t => t.UserId).IsUnique();
+
+        // No debería poder haber dos registros de "ya entrené" para el mismo
+        // usuario el mismo día.
+        modelBuilder.Entity<TrainingCompletion>().HasIndex(t => new { t.UserId, t.Date }).IsUnique();
+
+        // Un logro solo se puede desbloquear una vez por usuario -- misma
+        // idea que TrainingCompletion, pero clave por texto en vez de fecha.
+        modelBuilder.Entity<UserAchievement>().HasIndex(a => new { a.UserId, a.Key }).IsUnique();
+
         modelBuilder.Entity<User>().HasData(new User
         {
             Id = 1,
@@ -129,6 +148,10 @@ public class KatameDbContext : DbContext
         // el usuario, se borra en cascada todo lo suyo (tareas, transacciones, etc.).
         modelBuilder.Entity<Budget>().HasOne<User>().WithMany().HasForeignKey(b => b.UserId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CreditCard>().HasOne<User>().WithMany().HasForeignKey(c => c.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<FinancialProfile>().HasOne<User>().WithMany().HasForeignKey(f => f.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<TrainingCompletion>().HasOne<User>().WithMany().HasForeignKey(t => t.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<TrainingStreak>().HasOne<User>().WithMany().HasForeignKey(t => t.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<UserAchievement>().HasOne<User>().WithMany().HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Goal>().HasOne<User>().WithMany().HasForeignKey(g => g.UserId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Obligation>().HasOne<User>().WithMany().HasForeignKey(o => o.UserId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Project>().HasOne<User>().WithMany().HasForeignKey(p => p.UserId).OnDelete(DeleteBehavior.Cascade);

@@ -4,6 +4,7 @@ import type {
   Exercise,
   ExerciseFormValues,
   TrainingDay,
+  TrainingStreak,
   UpdateTrainingDayRequest,
 } from './types'
 
@@ -48,4 +49,14 @@ export async function updateExercise(
 
 export async function deleteExercise(dayId: number, exerciseId: number): Promise<void> {
   await apiClient.delete(`/training/days/${dayId}/exercises/${exerciseId}`)
+}
+
+export async function getTrainingStreak(): Promise<TrainingStreak> {
+  const { data } = await apiClient.get<TrainingStreak>('/training/streak')
+  return data
+}
+
+export async function markTrainingCompleted(): Promise<TrainingStreak> {
+  const { data } = await apiClient.post<TrainingStreak>('/training/completions')
+  return data
 }

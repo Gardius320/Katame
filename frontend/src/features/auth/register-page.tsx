@@ -82,12 +82,12 @@ export function RegisterPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-background p-4">
       <div className="text-center">
-        <h1
-          className="font-brush text-primary uppercase leading-none"
-          style={{ fontSize: 'clamp(3rem, 15vw, 6.5rem)' }}
-        >
-          {es.app.name}
-        </h1>
+        <img
+          src="/icons/icon.svg"
+          alt={es.app.name}
+          className="mx-auto"
+          style={{ width: 'clamp(6rem, 20vw, 11rem)' }}
+        />
         <p className="mt-3 font-mono text-sm tracking-wide text-muted-foreground">
           {es.register.subtitle}
         </p>

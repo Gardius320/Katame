@@ -10,11 +10,19 @@ namespace KatameApi.Services;
 public class TrainingService : ITrainingService
 {
     private readonly ITrainingDayRepository _trainingDayRepository;
+    private readonly ITrainingCompletionRepository _trainingCompletionRepository;
+    private readonly ITrainingStreakRepository _trainingStreakRepository;
     private readonly IMapper _mapper;
 
-    public TrainingService(ITrainingDayRepository trainingDayRepository, IMapper mapper)
+    public TrainingService(
+        ITrainingDayRepository trainingDayRepository,
+        ITrainingCompletionRepository trainingCompletionRepository,
+        ITrainingStreakRepository trainingStreakRepository,
+        IMapper mapper)
     {
         _trainingDayRepository = trainingDayRepository;
+        _trainingCompletionRepository = trainingCompletionRepository;
+        _trainingStreakRepository = trainingStreakRepository;
         _mapper = mapper;
     }
 
@@ -124,4 +132,80 @@ public class TrainingService : ITrainingService
     }
 
     private static int MondayFirstIndex(DayOfWeek dayOfWeek) => ((int)dayOfWeek + 6) % 7;
+
+    // Solo consulta la racha vigente, sin marcar nada como completado -- se usa
+    // para mostrar la insignia "🔥 N días" al abrir la pantalla de Entrenamiento.
+    public async Task<TrainingStreakDto> GetStreakAsync()
+    {
+        var current = await CalculateCurrentStreakAsync();
+        var longest = Math.Max(current, await _trainingStreakRepository.GetLongestAsync());
+
+        return new TrainingStreakDto { CurrentStreakDays = current, LongestStreakDays = longest, IsNewCompletion = false };
+    }
+
+    // Marca hoy como entrenado (si no se había marcado ya) y devuelve la racha
+    // actualizada, para que el frontend pueda mostrar el aviso animado al
+    // instante sin pedir el dato dos veces.
+    public async Task<TrainingStreakDto> MarkTodayCompletedAsync()
+    {
+        var today = DateTime.UtcNow.Date;
+        var isNewCompletion = !await _trainingCompletionRepository.ExistsForDateAsync(today);
+
+        if (isNewCompletion)
+        {
+            await _trainingCompletionRepository.AddAsync(new TrainingCompletion { Date = today });
+            await _trainingCompletionRepository.SaveChangesAsync();
+        }
+
+        var current = await CalculateCurrentStreakAsync();
+        var longest = await _trainingStreakRepository.UpdateLongestIfHigherAsync(current);
+
+        return new TrainingStreakDto { CurrentStreakDays = current, LongestStreakDays = longest, IsNewCompletion = isNewCompletion };
+    }
+
+    // Cuenta hacia atrás desde hoy cuántos días PLANEADOS seguidos tienen un
+    // registro de "completado". Un día sin nada planeado (ej. un descanso) no
+    // rompe la racha ni la extiende -- simplemente no cuenta. Si hoy es un día
+    // planeado pero todavía no se marcó, tampoco rompe la racha (el día no ha
+    // terminado): solo un día PASADO planeado y sin marcar la corta.
+    private async Task<int> CalculateCurrentStreakAsync()
+    {
+        var plannedWeekdays = (await _trainingDayRepository.GetAllAsync())
+            .Select(d => d.DayOfWeek)
+            .ToHashSet();
+
+        if (plannedWeekdays.Count == 0)
+        {
+            return 0;
+        }
+
+        var completedDates = (await _trainingCompletionRepository.GetAllDatesAsync())
+            .Select(d => d.Date)
+            .ToHashSet();
+
+        var today = DateTime.UtcNow.Date;
+        var cursor = today;
+        var streak = 0;
+
+        while ((today - cursor).TotalDays <= 3650)
+        {
+            if (plannedWeekdays.Contains(cursor.DayOfWeek))
+            {
+                if (completedDates.Contains(cursor))
+                {
+                    streak++;
+                }
+                else if (cursor != today)
+                {
+                    break;
+                }
+                // cursor == today y todavía no se completó: el día no ha
+                // terminado, no cuenta a favor ni en contra.
+            }
+
+            cursor = cursor.AddDays(-1);
+        }
+
+        return streak;
+    }
 }

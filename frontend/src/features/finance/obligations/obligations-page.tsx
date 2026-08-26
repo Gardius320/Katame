@@ -54,6 +54,7 @@ export default function ObligationsPage() {
         amount: obligation.amount,
         dueDate: obligation.dueDate,
         isRecurring: obligation.isRecurring,
+        recurrenceFrequency: obligation.recurrenceFrequency,
         isPaid: !obligation.isPaid,
       },
     })
@@ -105,13 +106,19 @@ export default function ObligationsPage() {
                 {obligation.isRecurring && (
                   <Badge variant="outline" className="gap-1">
                     <Repeat className="size-3" />
-                    {es.finance.obligations.recurring}
+                    {obligation.recurrenceFrequency === 'Biweekly'
+                      ? es.finance.obligations.recurrenceFrequency.biweekly
+                      : obligation.recurrenceFrequency === 'Monthly'
+                        ? es.finance.obligations.recurrenceFrequency.monthly
+                        : es.finance.obligations.recurring}
                   </Badge>
                 )}
                 <div className="min-w-0">
                   <p className="truncate font-medium">{obligation.name}</p>
                   <p className="font-numeric text-xs text-muted-foreground">
-                    {formatDueDate(obligation.dueDate)} · {formatCurrency(obligation.amount)}
+                    {obligation.isRecurring
+                      ? formatCurrency(obligation.amount)
+                      : `${formatDueDate(obligation.dueDate)} · ${formatCurrency(obligation.amount)}`}
                   </p>
                 </div>
               </div>

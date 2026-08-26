@@ -1,6 +1,7 @@
 using System.Net;
 using AutoMapper;
 using KatameApi.DTOs.Tasks;
+using KatameApi.Extensions;
 using KatameApi.Middleware;
 using KatameApi.Models;
 using KatameApi.Repositories;
@@ -30,7 +31,7 @@ public class TaskService : ITaskService
         {
             Title = request.Title,
             Status = request.Status,
-            Date = request.Date?.ToUniversalTime(),
+            Date = request.Date?.AsUtc(),
             ProjectId = request.ProjectId,
         };
 
@@ -46,7 +47,7 @@ public class TaskService : ITaskService
 
         task.Title = request.Title;
         task.Status = request.Status;
-        task.Date = request.Date?.ToUniversalTime();
+        task.Date = request.Date?.AsUtc();
         task.ProjectId = request.ProjectId;
 
         await _taskRepository.SaveChangesAsync();

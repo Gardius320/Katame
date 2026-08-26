@@ -16,5 +16,9 @@ public class UpdateSavingsGoalValidator : AbstractValidator<UpdateSavingsGoalDto
 
         RuleFor(x => x.CurrentAmount)
             .GreaterThanOrEqualTo(0).WithMessage("El monto actual no puede ser negativo.");
+
+        RuleFor(x => x.MonthlyContributionTarget)
+            .GreaterThan(0).WithMessage("El ahorro mensual planeado debe ser mayor a cero.")
+            .When(x => x.MonthlyContributionTarget.HasValue);
     }
 }

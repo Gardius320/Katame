@@ -7,4 +7,7 @@ public class SavingsGoalDto
     public decimal TargetAmount { get; set; }
     public decimal CurrentAmount { get; set; }
     public DateTime? DueDate { get; set; }
+    public decimal? MonthlyContributionTarget { get; set; }
+    public int CurrentStreakMonths { get; set; }
+    public int LongestStreakMonths { get; set; }
 }

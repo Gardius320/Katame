@@ -118,4 +118,22 @@ public class BudgetService : IBudgetService
 
         return budget;
     }
+
+    // Ventana "mes calendario en curso, hasta hoy" -- consistente con cómo ya
+    // piensa esta pantalla en ciclos mensuales (a diferencia del logro
+    // "mes sin gastos hormiga", que evalúa el mes calendario ANTERIOR ya
+    // cerrado; ver AchievementService.IsAntExpenseFreeLastMonthAsync).
+    public async Task<List<AntExpenseDto>> GetAntExpensesAsync()
+    {
+        var today = DateTime.UtcNow.Date;
+        var firstOfThisMonth = new DateTime(today.Year, today.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var expenses = (await _transactionRepository.GetAllAsync(new TransactionFilter
+        {
+            StartDate = firstOfThisMonth,
+            EndDate = today,
+        })).Where(t => t.Type == TransactionType.Expense).ToList();
+
+        return AntExpenseAnalyzer.Analyze(expenses);
+    }
 }

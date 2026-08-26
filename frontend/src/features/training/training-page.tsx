@@ -1,10 +1,14 @@
 import { useState } from 'react'
 import { Dumbbell, Pencil, Plus, Trash2 } from 'lucide-react'
 import { es } from '@/shared/i18n/es'
+import { StreakCelebrationDialog, STREAK_CELEBRATION_DURATION_MS } from '@/shared/components/streak-celebration-dialog'
+import { AchievementUnlockedDialog } from '@/shared/components/achievement-unlocked-dialog'
+import { useEvaluateAchievements } from '@/features/achievements/hooks'
 import { useDeleteExercise, useDeleteTrainingDay, useTrainingDays } from './hooks'
 import { TrainingDayFormDialog } from './training-day-form-dialog'
+import { TrainingStreakCard } from './training-streak-card'
 import { ExerciseFormDialog } from './exercise-form-dialog'
-import type { Exercise, TrainingDay } from './types'
+import type { Exercise, TrainingDay, TrainingStreak } from './types'
 import { Button } from '@/shared/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card'
 import { Badge } from '@/shared/components/ui/badge'
@@ -42,6 +46,33 @@ export default function TrainingPage() {
   const [exerciseFormDayId, setExerciseFormDayId] = useState<number | null>(null)
   const [editingExercise, setEditingExercise] = useState<Exercise | null>(null)
   const [exerciseToDelete, setExerciseToDelete] = useState<ExerciseTarget | null>(null)
+  const [streakDialog, setStreakDialog] = useState<{ open: boolean; streak: number }>({
+    open: false,
+    streak: 0,
+  })
+  const [achievementDialog, setAchievementDialog] = useState<{ open: boolean; title: string; description: string }>({
+    open: false,
+    title: '',
+    description: '',
+  })
+  const evaluateAchievements = useEvaluateAchievements()
+
+  const handleStreakCompleted = (streak: TrainingStreak) => {
+    setStreakDialog({ open: true, streak: streak.currentStreakDays })
+
+    evaluateAchievements.mutate(undefined, {
+      onSuccess: (newlyUnlocked) => {
+        const [first] = newlyUnlocked
+        if (!first) return
+
+        // La racha ya se va a mostrar (siempre que se llega hasta acá es
+        // porque isNewCompletion fue true) -- el logro espera a que termine.
+        window.setTimeout(() => {
+          setAchievementDialog({ open: true, title: first.title, description: first.description })
+        }, STREAK_CELEBRATION_DURATION_MS + 200)
+      },
+    })
+  }
 
   const openCreateDay = () => {
     setEditingDay(null)
@@ -91,17 +122,21 @@ export default function TrainingPage() {
         </Button>
       </div>
 
-      {!isLoading && days && (
-        <Card className="flex w-fit flex-col items-center gap-2 p-4">
-          <CircularGauge
-            value={days.length}
-            max={WEEKLY_TRAINING_GOAL}
-            label={es.training.weeklyGoal.label}
-            size="lg"
-            variant={days.length >= WEEKLY_TRAINING_GOAL ? 'success' : 'default'}
-          />
-        </Card>
-      )}
+      <div className="flex flex-wrap items-stretch gap-3">
+        {!isLoading && days && (
+          <Card className="flex w-fit flex-col items-center gap-2 p-4">
+            <CircularGauge
+              value={days.length}
+              max={WEEKLY_TRAINING_GOAL}
+              label={es.training.weeklyGoal.label}
+              size="lg"
+              variant={days.length >= WEEKLY_TRAINING_GOAL ? 'success' : 'default'}
+            />
+          </Card>
+        )}
+
+        <TrainingStreakCard onCompleted={handleStreakCompleted} />
+      </div>
 
       {isLoading ? (
         <div className="grid gap-4 sm:grid-cols-2">
@@ -197,6 +232,21 @@ export default function TrainingPage() {
       )}
 
       <TrainingDayFormDialog open={dayFormOpen} onOpenChange={setDayFormOpen} day={editingDay} />
+
+      <StreakCelebrationDialog
+        open={streakDialog.open}
+        onOpenChange={(open) => setStreakDialog((prev) => ({ ...prev, open }))}
+        streakCount={streakDialog.streak}
+        title={es.training.streak.dialogTitle}
+        description={es.training.streak.dialogDescription}
+      />
+
+      <AchievementUnlockedDialog
+        open={achievementDialog.open}
+        onOpenChange={(open) => setAchievementDialog((prev) => ({ ...prev, open }))}
+        title={achievementDialog.title}
+        description={achievementDialog.description}
+      />
 
       {exerciseFormDayId !== null && (
         <ExerciseFormDialog

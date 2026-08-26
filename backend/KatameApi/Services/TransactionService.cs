@@ -4,6 +4,7 @@ using System.Text;
 using AutoMapper;
 using KatameApi.DTOs.Common;
 using KatameApi.DTOs.Finance;
+using KatameApi.Extensions;
 using KatameApi.Middleware;
 using KatameApi.Models;
 using KatameApi.Repositories;
@@ -48,7 +49,7 @@ public class TransactionService : ITransactionService
             Amount = request.Amount,
             Type = request.Type,
             Category = request.Category,
-            Date = request.Date.ToUniversalTime(),
+            Date = request.Date.AsUtc(),
             CreditCardId = request.CreditCardId,
         };
 
@@ -66,7 +67,7 @@ public class TransactionService : ITransactionService
         transaction.Amount = request.Amount;
         transaction.Type = request.Type;
         transaction.Category = request.Category;
-        transaction.Date = request.Date.ToUniversalTime();
+        transaction.Date = request.Date.AsUtc();
         transaction.CreditCardId = request.CreditCardId;
 
         await _transactionRepository.SaveChangesAsync();

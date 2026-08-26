@@ -7,5 +7,6 @@ public class Obligation : BaseEntity, IUserOwned
     public decimal Amount { get; set; }
     public DateTime DueDate { get; set; }
     public bool IsRecurring { get; set; }
+    public RecurrenceFrequency? RecurrenceFrequency { get; set; }
     public bool IsPaid { get; set; }
 }

@@ -6,4 +6,5 @@ public class UpdateSavingsGoalDto
     public decimal TargetAmount { get; set; }
     public decimal CurrentAmount { get; set; }
     public DateTime? DueDate { get; set; }
+    public decimal? MonthlyContributionTarget { get; set; }
 }

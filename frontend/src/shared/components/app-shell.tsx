@@ -11,6 +11,7 @@ import {
   Repeat,
   Sun,
   Target,
+  Trophy,
   Users,
   Wallet,
   type LucideIcon,
@@ -34,6 +35,7 @@ const navItems: { to: string; label: string; icon: LucideIcon }[] = [
   { to: '/goals', label: es.nav.goals, icon: Target },
   { to: '/projects', label: es.nav.projects, icon: FolderKanban },
   { to: '/subscriptions', label: es.nav.subscriptions, icon: Repeat },
+  { to: '/achievements', label: es.nav.achievements, icon: Trophy },
 ]
 
 const adminNavItem: { to: string; label: string; icon: LucideIcon } = {
@@ -71,9 +73,7 @@ export function AppShell() {
       {/* Sidebar: solo en pantallas medianas y grandes (escritorio) */}
       <aside className="hidden w-64 shrink-0 flex-col border-r border-white/[0.06] bg-[#1E2128] md:flex">
         <div className="px-6 py-6">
-          <span className="font-mono text-sm tracking-[0.25em] text-foreground uppercase">
-            {es.app.name}
-          </span>
+          <img src="/icons/icon.svg" alt={es.app.name} className="h-10 w-10" />
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3">
@@ -124,9 +124,7 @@ export function AppShell() {
         <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-lg md:hidden">
           <div className="h-safe-top" aria-hidden="true" />
           <div className="flex h-14 items-center justify-between px-4">
-            <span className="font-heading text-xl font-bold tracking-tight text-foreground">
-              {es.app.name}
-            </span>
+            <img src="/icons/icon.svg" alt={es.app.name} className="size-9" />
             <div className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-primary/15 text-sm font-semibold text-primary">
               {getInitials(username ?? '?')}
             </div>

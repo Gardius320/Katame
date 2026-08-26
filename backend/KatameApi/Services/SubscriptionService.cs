@@ -1,6 +1,7 @@
 using System.Net;
 using AutoMapper;
 using KatameApi.DTOs.Subscriptions;
+using KatameApi.Extensions;
 using KatameApi.Middleware;
 using KatameApi.Models;
 using KatameApi.Repositories;
@@ -30,7 +31,7 @@ public class SubscriptionService : ISubscriptionService
         {
             Name = request.Name,
             Amount = request.Amount,
-            RenewalDate = request.RenewalDate.ToUniversalTime(),
+            RenewalDate = request.RenewalDate.AsUtc(),
             ReminderEnabled = request.ReminderEnabled,
         };
 
@@ -46,7 +47,7 @@ public class SubscriptionService : ISubscriptionService
 
         subscription.Name = request.Name;
         subscription.Amount = request.Amount;
-        subscription.RenewalDate = request.RenewalDate.ToUniversalTime();
+        subscription.RenewalDate = request.RenewalDate.AsUtc();
         subscription.ReminderEnabled = request.ReminderEnabled;
 
         await _subscriptionRepository.SaveChangesAsync();

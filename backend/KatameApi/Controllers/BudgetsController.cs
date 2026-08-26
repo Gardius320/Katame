@@ -30,6 +30,13 @@ public class BudgetsController : ControllerBase
         return Ok(budgets);
     }
 
+    [HttpGet("ant-expenses")]
+    public async Task<ActionResult<List<AntExpenseDto>>> GetAntExpenses()
+    {
+        var antExpenses = await _budgetService.GetAntExpensesAsync();
+        return Ok(antExpenses);
+    }
+
     [HttpPost]
     public async Task<ActionResult<BudgetDto>> Create(CreateBudgetDto request)
     {

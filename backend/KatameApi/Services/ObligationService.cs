@@ -1,6 +1,7 @@
 using System.Net;
 using AutoMapper;
 using KatameApi.DTOs.Finance;
+using KatameApi.Extensions;
 using KatameApi.Middleware;
 using KatameApi.Models;
 using KatameApi.Repositories;
@@ -30,8 +31,9 @@ public class ObligationService : IObligationService
         {
             Name = request.Name,
             Amount = request.Amount,
-            DueDate = request.DueDate.ToUniversalTime(),
+            DueDate = request.DueDate.AsUtc(),
             IsRecurring = request.IsRecurring,
+            RecurrenceFrequency = request.IsRecurring ? request.RecurrenceFrequency : null,
             IsPaid = false,
         };
 
@@ -47,8 +49,9 @@ public class ObligationService : IObligationService
 
         obligation.Name = request.Name;
         obligation.Amount = request.Amount;
-        obligation.DueDate = request.DueDate.ToUniversalTime();
+        obligation.DueDate = request.DueDate.AsUtc();
         obligation.IsRecurring = request.IsRecurring;
+        obligation.RecurrenceFrequency = request.IsRecurring ? request.RecurrenceFrequency : null;
         obligation.IsPaid = request.IsPaid;
 
         await _obligationRepository.SaveChangesAsync();

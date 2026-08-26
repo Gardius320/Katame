@@ -12,5 +12,6 @@ public class FinanceMappingProfile : Profile
         CreateMap<Obligation, ObligationDto>();
         CreateMap<CreditCard, CreditCardDto>();
         CreateMap<Budget, BudgetDto>();
+        CreateMap<FinancialProfile, FinancialProfileDto>();
     }
 }

@@ -20,3 +20,12 @@ export interface BudgetFormValues {
   period: BudgetPeriod
   anchorDate: string
 }
+
+// Categoría de gasto marcada como "hormiga": pequeña y frecuente en lo que
+// va del mes, aunque no tenga un presupuesto asignado.
+export interface AntExpense {
+  category: string
+  transactionCount: number
+  totalAmount: number
+  averageAmount: number
+}

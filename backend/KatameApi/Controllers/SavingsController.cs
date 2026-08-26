@@ -12,15 +12,18 @@ public class SavingsController : ControllerBase
     private readonly ISavingsGoalService _savingsGoalService;
     private readonly IValidator<CreateSavingsGoalDto> _createValidator;
     private readonly IValidator<UpdateSavingsGoalDto> _updateValidator;
+    private readonly IValidator<ContributeSavingsGoalDto> _contributeValidator;
 
     public SavingsController(
         ISavingsGoalService savingsGoalService,
         IValidator<CreateSavingsGoalDto> createValidator,
-        IValidator<UpdateSavingsGoalDto> updateValidator)
+        IValidator<UpdateSavingsGoalDto> updateValidator,
+        IValidator<ContributeSavingsGoalDto> contributeValidator)
     {
         _savingsGoalService = savingsGoalService;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
+        _contributeValidator = contributeValidator;
     }
 
     [HttpGet]
@@ -43,6 +46,14 @@ public class SavingsController : ControllerBase
     {
         await _updateValidator.ValidateAndThrowAsync(request);
         var goal = await _savingsGoalService.UpdateAsync(id, request);
+        return Ok(goal);
+    }
+
+    [HttpPost("{id:int}/contribute")]
+    public async Task<ActionResult<SavingsGoalDto>> Contribute(int id, ContributeSavingsGoalDto request)
+    {
+        await _contributeValidator.ValidateAndThrowAsync(request);
+        var goal = await _savingsGoalService.ContributeAsync(id, request);
         return Ok(goal);
     }
 
