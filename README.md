@@ -78,7 +78,11 @@ Esto crea el esquema y siembra un usuario inicial:
 - **Usuario:** `admin`
 - **Contraseña:** `Admin123!`
 
-Cámbiala después de tu primer login.
+Esta credencial es solo para levantar el proyecto localmente desde cero (o cualquier
+entorno nuevo). **No es la contraseña real de producción** — como este repo es público,
+la contraseña que se usa de verdad en el entorno productivo se rota directo en la base
+de datos y nunca se guarda acá ni en el código. Si levantás un entorno local, cambiá esta
+contraseña apenas inicies sesión por primera vez.
 
 ## 5. Certificado HTTPS de desarrollo
 

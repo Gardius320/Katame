@@ -63,7 +63,11 @@ public class KatameDbContext : DbContext
             DocumentId = "ADMIN-0001",
             PhoneNumber = "0000000000",
             Email = "admin@katame.local",
-            // Password semilla: "Admin123!" (hash BCrypt precalculado, cambiar tras el primer login)
+            // Hash BCrypt de una contraseña semilla SOLO para entornos locales/frescos
+            // (ver README, sección de instalación). Deliberadamente NO es la contraseña
+            // real de producción: esta línea es pública, así que la contraseña real se
+            // rota directo en la base de datos (SQL), nunca se guarda acá ni en texto
+            // plano ni como hash.
             PasswordHash = "$2a$11$ARlh7cu2CbBsZfvRSZl08.g.mUZm3QvsQGvlZzIHkpJeIgv6ozn5m",
             IsAdmin = true,
             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
