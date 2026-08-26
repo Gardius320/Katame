@@ -95,6 +95,11 @@
 
   html {
     color-scheme: dark;
+    /* Resguardo: si algún componente se desborda horizontalmente (ej. una fila
+       de tabs que no entra en una pantalla angosta), que se recorte en vez de
+       correr toda la página hacia la derecha. Las áreas que sí necesitan
+       scroll horizontal lo declaran ellas mismas con overflow-x-auto. */
+    overflow-x: hidden;
   }
 
   html.light {
@@ -102,7 +107,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-sans antialiased overflow-x-hidden;
   }
 
   h1,
