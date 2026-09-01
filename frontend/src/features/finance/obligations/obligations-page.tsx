@@ -87,69 +87,69 @@ export default function ObligationsPage() {
       ) : obligations && obligations.length > 0 ? (
         <div className="grid gap-2">
           {obligations.map((obligation) => (
-            <Card
-              key={obligation.id}
-              className="flex-row items-center justify-between gap-4 px-4 py-4"
-            >
-              <div className="flex min-w-0 items-center gap-3">
-                <Badge
-                  className={cn(
-                    'gap-1',
-                    obligation.isPaid
-                      ? 'bg-positive/15 text-positive katame-seal'
-                      : 'bg-destructive/15 text-destructive',
-                  )}
-                >
-                  {obligation.isPaid && <Check className="size-3" />}
-                  {obligation.isPaid ? es.finance.obligations.paid : es.finance.obligations.unpaid}
-                </Badge>
-                {obligation.isRecurring && (
-                  <Badge variant="outline" className="gap-1">
-                    <Repeat className="size-3" />
-                    {obligation.recurrenceFrequency === 'Biweekly'
-                      ? es.finance.obligations.recurrenceFrequency.biweekly
-                      : obligation.recurrenceFrequency === 'Monthly'
-                        ? es.finance.obligations.recurrenceFrequency.monthly
-                        : es.finance.obligations.recurring}
+            <Card key={obligation.id} className="gap-3 p-4">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex min-w-0 flex-wrap items-center gap-2">
+                  <Badge
+                    className={cn(
+                      'gap-1',
+                      obligation.isPaid
+                        ? 'bg-positive/15 text-positive katame-seal'
+                        : 'bg-destructive/15 text-destructive',
+                    )}
+                  >
+                    {obligation.isPaid && <Check className="size-3" />}
+                    {obligation.isPaid ? es.finance.obligations.paid : es.finance.obligations.unpaid}
                   </Badge>
-                )}
-                <div className="min-w-0">
-                  <p className="truncate font-medium">{obligation.name}</p>
-                  <p className="font-numeric text-xs text-muted-foreground">
-                    {obligation.isRecurring
-                      ? formatCurrency(obligation.amount)
-                      : `${formatDueDate(obligation.dueDate)} · ${formatCurrency(obligation.amount)}`}
-                  </p>
+                  {obligation.isRecurring && (
+                    <Badge variant="outline" className="gap-1">
+                      <Repeat className="size-3" />
+                      {obligation.recurrenceFrequency === 'Biweekly'
+                        ? es.finance.obligations.recurrenceFrequency.biweekly
+                        : obligation.recurrenceFrequency === 'Monthly'
+                          ? es.finance.obligations.recurrenceFrequency.monthly
+                          : es.finance.obligations.recurring}
+                    </Badge>
+                  )}
+                  <p className="min-w-0 truncate font-medium">{obligation.name}</p>
+                </div>
+                <div className="flex shrink-0 items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label={es.common.edit}
+                    title={es.common.edit}
+                    onClick={() => openEditForm(obligation)}
+                  >
+                    <Pencil className="size-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label={es.common.delete}
+                    title={es.common.delete}
+                    onClick={() => setObligationToDelete(obligation)}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
                 </div>
               </div>
-              <div className="flex shrink-0 items-center gap-1">
+              <div className="flex items-center justify-between gap-2">
+                <p className="min-w-0 truncate font-numeric text-xs text-muted-foreground">
+                  {obligation.isRecurring
+                    ? formatCurrency(obligation.amount)
+                    : `${formatDueDate(obligation.dueDate)} · ${formatCurrency(obligation.amount)}`}
+                </p>
                 <Button
                   variant="outline"
                   size="sm"
+                  className="shrink-0"
                   onClick={() => togglePaid(obligation)}
                   disabled={updateObligation.isPending}
                 >
                   {obligation.isPaid
                     ? es.finance.obligations.markAsUnpaid
                     : es.finance.obligations.markAsPaid}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label={es.common.edit}
-                  title={es.common.edit}
-                  onClick={() => openEditForm(obligation)}
-                >
-                  <Pencil className="size-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label={es.common.delete}
-                  title={es.common.delete}
-                  onClick={() => setObligationToDelete(obligation)}
-                >
-                  <Trash2 className="size-4" />
                 </Button>
               </div>
             </Card>
