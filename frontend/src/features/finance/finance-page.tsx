@@ -95,7 +95,7 @@ export default function FinancePage() {
         )}
       </div>
 
-      <Tabs defaultValue="transactions" className="gap-6">
+      <Tabs defaultValue="transactions" className="min-w-0 gap-6">
         <TabsList className="w-full overflow-x-auto sm:w-fit">
           <TabsTrigger value="transactions">{es.finance.tabs.transactions}</TabsTrigger>
           <TabsTrigger value="budgets">{es.finance.tabs.budgets}</TabsTrigger>

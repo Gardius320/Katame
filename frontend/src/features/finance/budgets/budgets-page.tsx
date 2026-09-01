@@ -102,7 +102,7 @@ export default function BudgetsPage() {
             const isNearLimit = !isOverLimit && percent >= 80
 
             return (
-              <Card key={budget.id} className="gap-3 p-4">
+              <Card key={budget.id} className="min-w-0 gap-3 p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <p className="font-heading font-semibold">{budget.category}</p>

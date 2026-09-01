@@ -67,12 +67,12 @@ export default function ObligationsPage() {
 
   return (
     <div className="grid gap-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="min-w-0">
           <h1 className="font-heading text-2xl font-semibold">{es.finance.obligations.title}</h1>
           <p className="text-muted-foreground">{es.finance.obligations.subtitle}</p>
         </div>
-        <Button onClick={openCreateForm}>
+        <Button onClick={openCreateForm} className="w-full sm:w-auto">
           <Plus className="size-4" />
           {es.finance.obligations.newObligation}
         </Button>
@@ -87,7 +87,7 @@ export default function ObligationsPage() {
       ) : obligations && obligations.length > 0 ? (
         <div className="grid gap-2">
           {obligations.map((obligation) => (
-            <Card key={obligation.id} className="gap-3 p-4">
+            <Card key={obligation.id} className="min-w-0 gap-3 p-4">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex min-w-0 flex-wrap items-center gap-2">
                   <Badge

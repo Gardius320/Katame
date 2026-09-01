@@ -120,7 +120,7 @@ export default function SavingsPage() {
             const isComplete = progress >= 1
 
             return (
-              <Card key={goal.id} className="gap-3 p-4">
+              <Card key={goal.id} className="min-w-0 gap-3 p-4">
                 <div className="flex items-start justify-between gap-2">
                   <p className="font-heading font-semibold">{goal.name}</p>
                   <div className="flex shrink-0 items-center gap-1">

@@ -90,7 +90,7 @@ export default function CreditCardsPage() {
       ) : cards && cards.length > 0 ? (
         <div className="grid gap-3 sm:grid-cols-2">
           {cards.map((card) => (
-            <Card key={card.id} className="gap-3 p-4">
+            <Card key={card.id} className="min-w-0 gap-3 p-4">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <CardBankBadge card={card} />
