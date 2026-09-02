@@ -79,7 +79,7 @@ function App() {
         <BrowserRouter>
           <AppRoutes />
         </BrowserRouter>
-        <Toaster richColors position="bottom-right" />
+        <Toaster richColors position="bottom-right" duration={2500} />
         {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
       </QueryClientProvider>
     </ErrorBoundary>

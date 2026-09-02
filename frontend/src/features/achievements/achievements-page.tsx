@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Trophy } from 'lucide-react'
+import { Dumbbell, Lock, Trophy, Wallet } from 'lucide-react'
 import { es } from '@/shared/i18n/es'
 import { cn } from '@/shared/lib/utils'
 import { AchievementUnlockedDialog } from '@/shared/components/achievement-unlocked-dialog'
@@ -12,20 +12,31 @@ const unlockedAtFormatter = new Intl.DateTimeFormat('es-CO', { day: 'numeric', m
 
 const CATEGORIES: AchievementCategory[] = ['finanzas', 'entrenamiento']
 
+const CATEGORY_ICON: Record<AchievementCategory, typeof Wallet> = {
+  finanzas: Wallet,
+  entrenamiento: Dumbbell,
+}
+
 function AchievementCard({ achievement }: { achievement: Achievement }) {
   return (
     <Card
       className={cn(
         'flex flex-row items-start gap-3 p-4',
-        !achievement.unlocked && 'opacity-60',
+        !achievement.unlocked && 'bg-muted/40 opacity-70',
       )}
     >
-      <Trophy
+      <div
         className={cn(
-          'size-8 shrink-0',
-          achievement.unlocked ? 'fill-amber-400 text-amber-500' : 'text-muted-foreground',
+          'flex size-11 shrink-0 items-center justify-center rounded-full',
+          achievement.unlocked ? 'bg-amber-400/15' : 'bg-muted',
         )}
-      />
+      >
+        {achievement.unlocked ? (
+          <Trophy className="size-5 fill-amber-400 text-amber-500" />
+        ) : (
+          <Lock className="size-4 text-muted-foreground" />
+        )}
+      </div>
       <div className="min-w-0">
         <p className="font-heading font-semibold">{achievement.title}</p>
         <p className="text-sm text-muted-foreground">{achievement.description}</p>
@@ -36,7 +47,11 @@ function AchievementCard({ achievement }: { achievement: Achievement }) {
               unlockedAtFormatter.format(new Date(achievement.unlockedAt)),
             )}
           </p>
-        ) : null}
+        ) : (
+          <p className="mt-1 text-xs font-medium text-muted-foreground">
+            {es.achievements.lockedLabel}
+          </p>
+        )}
       </div>
     </Card>
   )
@@ -51,9 +66,9 @@ export default function AchievementsPage() {
     description: '',
   })
 
-  // Al entrar a la pantalla, revisa si algo se cumplió pero todavía no se
-  // había desbloqueado (ej. el logro "mes sin gastos hormiga", que solo se
-  // evalúa de forma perezosa cuando el usuario dispara alguna acción).
+  // Al entrar a la pantalla, revisa si algo se cumplio pero todavia no se
+  // habia desbloqueado (ej. el logro "mes sin gastos hormiga", que solo se
+  // evalua de forma perezosa cuando el usuario dispara alguna accion).
   useEffect(() => {
     evaluate.mutate(undefined, {
       onSuccess: (newlyUnlocked) => {
@@ -66,11 +81,32 @@ export default function AchievementsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const total = achievements?.length ?? 0
+  const unlockedCount = achievements?.filter((a) => a.unlocked).length ?? 0
+  const progressPercent = total > 0 ? Math.round((unlockedCount / total) * 100) : 0
+
   return (
     <div className="grid gap-6">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold">{es.achievements.title}</h1>
-        <p className="text-muted-foreground">{es.achievements.subtitle}</p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+        <div className="min-w-0">
+          <h1 className="font-heading text-2xl font-semibold">{es.achievements.title}</h1>
+          <p className="text-muted-foreground">{es.achievements.subtitle}</p>
+        </div>
+        {!isLoading && total > 0 && (
+          <div className="flex flex-col gap-1.5 sm:w-48 sm:shrink-0">
+            <p className="text-right font-numeric text-xs font-medium text-muted-foreground">
+              {es.achievements.progressLabel
+                .replace('{unlocked}', String(unlockedCount))
+                .replace('{total}', String(total))}
+            </p>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-500 transition-[width] duration-500 ease-out"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {isLoading ? (
@@ -85,11 +121,20 @@ export default function AchievementsPage() {
             const items = (achievements ?? []).filter((a) => a.category === category)
             if (items.length === 0) return null
 
+            const CategoryIcon = CATEGORY_ICON[category]
+            const categoryUnlocked = items.filter((a) => a.unlocked).length
+
             return (
               <div key={category} className="grid gap-3">
-                <h2 className="font-heading text-lg font-semibold">
-                  {es.achievements.categories[category]}
-                </h2>
+                <div className="flex items-center gap-2">
+                  <CategoryIcon className="size-4 text-muted-foreground" />
+                  <h2 className="font-heading text-lg font-semibold">
+                    {es.achievements.categories[category]}
+                  </h2>
+                  <span className="font-numeric text-sm text-muted-foreground">
+                    {categoryUnlocked}/{items.length}
+                  </span>
+                </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {items.map((achievement) => (
                     <AchievementCard key={achievement.key} achievement={achievement} />

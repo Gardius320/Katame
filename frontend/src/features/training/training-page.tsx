@@ -111,12 +111,12 @@ export default function TrainingPage() {
 
   return (
     <div className="grid gap-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="min-w-0">
           <h1 className="font-heading text-2xl font-semibold">{es.training.title}</h1>
           <p className="text-muted-foreground">{es.training.subtitle}</p>
         </div>
-        <Button onClick={openCreateDay}>
+        <Button onClick={openCreateDay} className="w-full sm:w-auto">
           <Plus className="size-4" />
           {es.training.newDay}
         </Button>
@@ -132,6 +132,11 @@ export default function TrainingPage() {
               size="lg"
               variant={days.length >= WEEKLY_TRAINING_GOAL ? 'success' : 'default'}
             />
+            <p className="text-center text-xs text-muted-foreground">
+              {es.training.weeklyGoal.progress
+                .replace('{current}', String(days.length))
+                .replace('{goal}', String(WEEKLY_TRAINING_GOAL))}
+            </p>
           </Card>
         )}
 

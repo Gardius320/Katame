@@ -90,21 +90,22 @@ export default function TransactionsPage() {
 
   return (
     <div className="grid gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="min-w-0">
           <h1 className="font-heading text-2xl font-semibold">{es.finance.title}</h1>
           <p className="text-muted-foreground">{es.finance.subtitle}</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
+            className="flex-1 sm:flex-initial"
             onClick={() => exportCsv.mutate(filter)}
             disabled={exportCsv.isPending}
           >
             <Download className="size-4" />
             {es.finance.transactions.exportCsv}
           </Button>
-          <Button onClick={openCreateForm}>
+          <Button className="flex-1 sm:flex-initial" onClick={openCreateForm}>
             <Plus className="size-4" />
             {es.finance.transactions.newTransaction}
           </Button>

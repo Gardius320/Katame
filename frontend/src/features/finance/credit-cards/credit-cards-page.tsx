@@ -70,12 +70,12 @@ export default function CreditCardsPage() {
 
   return (
     <div className="grid gap-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="min-w-0">
           <h1 className="font-heading text-2xl font-semibold">{es.finance.creditCards.title}</h1>
           <p className="text-muted-foreground">{es.finance.creditCards.subtitle}</p>
         </div>
-        <Button onClick={openCreateForm}>
+        <Button onClick={openCreateForm} className="w-full sm:w-auto">
           <Plus className="size-4" />
           {es.finance.creditCards.newCard}
         </Button>

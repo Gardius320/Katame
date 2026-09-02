@@ -182,10 +182,13 @@ export const es = {
     emptyState: 'No tienes días de entrenamiento todavía. Crea el primero.',
     weeklyGoal: {
       label: 'Meta semanal',
+      progress: '{current} de {goal} días esta semana',
     },
     streak: {
       currentLabel: 'Racha actual',
+      currentLabelZero: 'Arranca tu racha',
       longestLabel: 'Récord: {count} días',
+      explainer: 'Solo cuentan los días que planeaste entrenar.',
       markCompletedToday: 'Ya entrené hoy',
       alreadyMarkedToday: 'Ya habías marcado hoy como entrenado.',
       dialogTitle: '¡Racha de entrenamiento!',
@@ -650,6 +653,8 @@ export const es = {
     subtitle: 'Hitos financieros y de entrenamiento que vas desbloqueando',
     unlockedLabel: 'Logro desbloqueado',
     unlockedOn: 'Desbloqueado el {date}',
+    progressLabel: '{unlocked} de {total} desbloqueados',
+    lockedLabel: 'Bloqueado',
     categories: {
       finanzas: 'Finanzas',
       entrenamiento: 'Entrenamiento',
