@@ -103,13 +103,12 @@ export default function CreditCardsPage() {
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
                   <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    aria-label={es.common.edit}
-                    title={es.common.edit}
+                    variant="outline"
+                    size="sm"
                     onClick={() => openEditForm(card)}
                   >
                     <Pencil className="size-4" />
+                    {es.common.edit}
                   </Button>
                   <Button
                     variant="ghost"

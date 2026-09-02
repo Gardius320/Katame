@@ -81,4 +81,18 @@ public class TrainingController : ControllerBase
         await _trainingService.DeleteExerciseAsync(dayId, exerciseId);
         return NoContent();
     }
+
+    [HttpGet("streak")]
+    public async Task<ActionResult<TrainingStreakDto>> GetStreak()
+    {
+        var streak = await _trainingService.GetStreakAsync();
+        return Ok(streak);
+    }
+
+    [HttpPost("completions")]
+    public async Task<ActionResult<TrainingStreakDto>> MarkTodayCompleted()
+    {
+        var streak = await _trainingService.MarkTodayCompletedAsync();
+        return Ok(streak);
+    }
 }
