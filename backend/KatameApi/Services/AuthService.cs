@@ -147,6 +147,24 @@ public class AuthService : IAuthService
         await _userRepository.SaveChangesAsync();
     }
 
+    public async Task LogoutAsync(RefreshRequestDto request)
+    {
+        var user = await _userRepository.GetByRefreshTokenAsync(request.RefreshToken);
+
+        // Si el token ya no existe o ya expiro, no hay nada que revocar --
+        // se responde igual sin error (mismo espiritu que ForgotPasswordAsync:
+        // no filtrar informacion, y ademas hace que cerrar sesion sea
+        // idempotente sin importar el estado del token).
+        if (user is null)
+        {
+            return;
+        }
+
+        user.RefreshToken = null;
+        user.RefreshTokenExpiry = null;
+        await _userRepository.SaveChangesAsync();
+    }
+
     private static string GenerateSecureToken()
     {
         var randomBytes = RandomNumberGenerator.GetBytes(32);

@@ -61,6 +61,8 @@ export const es = {
     usernamePlaceholder: 'tu@correo.com',
     passwordLabel: 'Contraseña',
     passwordPlaceholder: '••••••••',
+    showPassword: 'Mostrar contraseña',
+    hidePassword: 'Ocultar contraseña',
     loginButton: 'Entrar',
     loggingIn: 'Ingresando...',
     loginSuccess: (name: string) => `Bienvenid@ de nuevo, ${name}`,

@@ -21,14 +21,11 @@ public class UpdateCreditCardValidator : AbstractValidator<UpdateCreditCardDto>
             .GreaterThan(0).WithMessage("El límite de crédito debe ser mayor a cero.");
 
         RuleFor(x => x.LogoDataUrl)
-            .Must(BeAValidImageDataUrl).WithMessage("El logo debe ser una imagen válida (PNG o JPG).")
+            .Must(ImageDataUrlHelper.IsValidImageDataUrl).WithMessage("El logo debe ser una imagen válida (PNG o JPG).")
             .MaximumLength(700_000).WithMessage("La imagen del logo es demasiado grande.")
             .When(x => !string.IsNullOrEmpty(x.LogoDataUrl));
 
         RuleFor(x => x.Bank)
             .MaximumLength(100).WithMessage("El nombre del banco no puede superar los 100 caracteres.");
     }
-
-    private static bool BeAValidImageDataUrl(string? value) =>
-        value is null || value.StartsWith("data:image/", StringComparison.Ordinal);
 }

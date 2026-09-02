@@ -207,6 +207,27 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    // HSTS le dice al navegador que siempre use HTTPS con este dominio, incluso si
+    // alguien escribe la URL con http://. Solo tiene sentido fuera de Development
+    // porque en local no hay certificado HTTPS real.
+    app.UseHsts();
+}
+
+// Encabezados de seguridad HTTP básicos (defensa en profundidad, no dependen de
+// que el resto del código esté bien escrito). No se agrega Content-Security-Policy
+// aquí porque requeriría conocer de antemano el origen exacto del backend en
+// producción para el "connect-src", y un valor incorrecto rompería todas las
+// llamadas a la API sin forma de probarlo antes de desplegar.
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["X-Frame-Options"] = "DENY";
+    context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+    context.Response.Headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+    await next();
+});
 
 app.UseHttpsRedirection();
 

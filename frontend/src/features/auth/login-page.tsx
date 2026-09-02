@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
+import { Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
 import { es } from '@/shared/i18n/es'
 import { useSessionStore } from '@/shared/store/session-store'
@@ -29,6 +31,7 @@ type LoginForm = z.infer<typeof loginSchema>
 export function LoginPage() {
   const navigate = useNavigate()
   const setSession = useSessionStore((state) => state.setSession)
+  const [showPassword, setShowPassword] = useState(false)
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -93,12 +96,25 @@ export function LoginPage() {
                   <FormItem>
                     <FormLabel>{es.auth.passwordLabel}</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder={es.auth.passwordPlaceholder}
-                        autoComplete="current-password"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder={es.auth.passwordPlaceholder}
+                          autoComplete="current-password"
+                          className="pr-10"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground transition-colors hover:text-foreground"
+                          aria-label={showPassword ? es.auth.hidePassword : es.auth.showPassword}
+                          title={showPassword ? es.auth.hidePassword : es.auth.showPassword}
+                          tabIndex={-1}
+                        >
+                          {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -16,6 +16,7 @@ import {
   Wallet,
   type LucideIcon,
 } from 'lucide-react'
+import { logout as logoutRequest } from '@/features/auth/api'
 import { es } from '@/shared/i18n/es'
 import { useSessionStore } from '@/shared/store/session-store'
 import { useUiStore } from '@/shared/store/ui-store'
@@ -53,12 +54,19 @@ export function AppShell() {
   const location = useLocation()
   const username = useSessionStore((state) => state.username)
   const isAdmin = useSessionStore((state) => state.isAdmin)
+  const refreshToken = useSessionStore((state) => state.refreshToken)
   const clearSession = useSessionStore((state) => state.clearSession)
   const theme = useUiStore((state) => state.theme)
   const toggleTheme = useUiStore((state) => state.toggleTheme)
   const [moreOpen, setMoreOpen] = useState(false)
 
   const handleLogout = () => {
+    // Mejor esfuerzo: se intenta revocar el refresh token en el servidor,
+    // pero la sesion local se limpia y se navega a /login pase lo que pase
+    // (si no hay conexion, igual queremos que el usuario pueda salir).
+    if (refreshToken) {
+      logoutRequest(refreshToken).catch(() => {})
+    }
     clearSession()
     navigate('/login', { replace: true })
   }

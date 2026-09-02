@@ -24,3 +24,7 @@ export async function forgotPassword(payload: ForgotPasswordRequest): Promise<vo
 export async function resetPassword(payload: ResetPasswordRequest): Promise<void> {
   await apiClient.post('/auth/reset-password', payload)
 }
+
+export async function logout(refreshToken: string): Promise<void> {
+  await apiClient.post('/auth/logout', { refreshToken })
+}

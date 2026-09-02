@@ -79,4 +79,12 @@ public class AuthController : ControllerBase
         await _authService.ResetPasswordAsync(request);
         return Ok(new { message = "Tu contraseña se actualizó correctamente." });
     }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(RefreshRequestDto request)
+    {
+        await _refreshValidator.ValidateAndThrowAsync(request);
+        await _authService.LogoutAsync(request);
+        return NoContent();
+    }
 }
